@@ -24,6 +24,20 @@ app.get('/sights', function(request, response){
     response.render('sights.hbs', model)
 })
 
+app.get("/sights/:id", function(request, response){
+
+const id = request.params.id
+
+const sight = data.sights.find(s => s.id == id)
+
+const model= {
+    sight: sight
+}
+
+response.render('sight.hbs', model)
+
+})
+
 
 
 app.listen(8080)

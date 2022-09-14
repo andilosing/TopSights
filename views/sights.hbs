@@ -1,9 +1,9 @@
 <h1>Sights</h1>
 
-{{#if sightslength}}
+{{#if sights.length}}
 <ul>
     {{#each sights}}
-    <li> {{name}}  (location: {{location}})</li>
+    <li> <a href="/sights/{{id}}">{{name}}</a>  (location: {{location}})</li>
     {{/each}}
 </ul>
 
