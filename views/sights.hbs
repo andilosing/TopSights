@@ -1,0 +1,13 @@
+<h1>Sights</h1>
+
+{{#if sightslength}}
+<ul>
+    {{#each sights}}
+    <li> {{name}}  (location: {{location}})</li>
+    {{/each}}
+</ul>
+
+{{else}}
+<p>We have no sights to recommend at the moment.</p>
+{{/if}}
+
