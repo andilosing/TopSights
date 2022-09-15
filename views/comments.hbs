@@ -1,0 +1,26 @@
+{{#if comments.length}}
+
+ <div class="container">
+<div class="columns ">
+ 
+{{#each comments}}
+<div class="card">
+<p>{{author}}</p>
+<p>{{headline}}</p>
+<p>{{comment}}</p>
+</div>
+{{/each}}
+</div>
+</div>
+{{else}}
+<p>Sorry. At the moment no comments available!</p>
+{{/if}}
+
+<div class="form-group">
+  <label class="form-label" for="input-example-1">Name</label>
+  <input class="form-input" type="text" id="input-example-1" placeholder="Name">
+  <label class="form-label" for="input-example-3">Your comment</label>
+  <textarea class="form-input" id="input-example-3" placeholder="Here you can write your text..." rows="6"></textarea>
+  <button class="btn btn-primary">Submit</button>
+</div>
+

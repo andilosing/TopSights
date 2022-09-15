@@ -1,13 +1,31 @@
 <h1>Sights</h1>
 
-{{#if sights.length}}
-<ul>
-    {{#each sights}}
-    <li> <a href="/sights/{{id}}">{{name}}</a>  (location: {{location}})</li>
-    {{/each}}
-</ul>
+<button class="btn btn-primary">Add Sight</button>
+<!--  -->
 
-{{else}}
-<p>We have no sights to recommend at the moment.</p>
-{{/if}}
+{{#if sights.length}}
+  <!-- Start Flexbox grid -->
+  <div class = "container">
+  <div class="columns">
+    {{#each sights}}
+       <div class="column col-6"> 
+        <!-- Starting Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title h5 bg-primary"><a class="text-secondary" href="/sights/{{id}}">{{name}}</a></div>
+            <div class="card-subtitle text-gray">{{location}}</div>
+          </div>
+           <div class="card-body">
+            <p>The sight {{name}} is at location {{location}}.</p>
+            <p>For more information click on the header!</p>
+            </div>
+        </div>
+      </div> 
+                   
+    {{/each}}
+   </div>
+   </div>
+    {{else}}
+      <p>We have no sights to recommend at the moment.</p>
+    {{/if}}
 

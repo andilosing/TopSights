@@ -1,8 +1,13 @@
-<h1>Sight</h1>
+
 {{#if sight}}
-<p>The sight {{sight.name}} is at {{sight.location}}</p>
+<h1>{{sight.name}}</h1>
+<h6>Location: {{sight.location}}</h6>
+<p>{{sight.info}}</p>
+<button class="btn btn-primary">Update</button>
+<button class="btn btn-primary">Delete</button>
 
 {{else}}
+<h1>Sight</h1>
 <p>That sight does not exist!</p>
 
 {{/if}}

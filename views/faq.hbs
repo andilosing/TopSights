@@ -1,0 +1,28 @@
+<div class="accordion">
+  
+
+{{#if faq.length}}
+
+{{#each faq}}
+<div class="accordion">
+  <input type="checkbox" id="{{id}}" name="accordion-checkbox" hidden>
+  <label class="accordion-header" for="{{id}}">
+    <i class="icon icon-arrow-right mr-{{id}}"></i>
+    #{{id}}: {{question}}
+  </label>
+  <div class="accordion-body">
+   {{answer}}
+  </div>
+</div>
+{{/each}}
+
+{{else}}
+ We have no faq available at the moment. Sorry!
+{{/if}}
+
+<button class="btn btn-primary">Create Question and Answer</button>
+<button class="btn btn-primary">Update</button>
+<button class="btn btn-primary">Delete Question and Answer</button>
+
+
+
