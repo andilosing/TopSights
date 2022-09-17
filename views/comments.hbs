@@ -14,6 +14,10 @@
 					</div>
 					<div class="card-body"> {{comment}}</div>
 					<div class="card-footer">Rating: ({{rating}}/10)</div>
+					<div><a href="/comment/update/{{id}}">Update</a></div>
+					<form action="/comment/delete/{{id}}" method="POST">	
+						<input type="submit" value="Delete">	
+					</form>
 				</div>
 			</div>
 

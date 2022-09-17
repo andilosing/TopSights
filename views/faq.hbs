@@ -1,4 +1,6 @@
 <h1>FAQ</h1>
+<button class="btn btn-primary"><a href="/faq/create ">Create</a></button>
+
 <div class="accordion">
 
 	{{#if faq.length}}
@@ -16,7 +18,13 @@
 						</label>
 						<div class="accordion-body">
 							{{answer}}
+							<form action="/faq/delete/{{id}}" method="POST">	
+								<input type="submit" value="Delete">	
+							</form>
+							<a href="/faq/update/{{id}}">Update</a>
+
 						</div>
+						
 					</div>
 				</div>
 			{{/each}}
@@ -27,6 +35,4 @@
 
 	{{/if}}
 
-	<button class="btn btn-primary">Create Question and Answer</button>
-	<button class="btn btn-primary">Update</button>
-	<button class="btn btn-primary">Delete Question and Answer</button>
+	

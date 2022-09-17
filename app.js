@@ -47,6 +47,51 @@ app.get('/faq', function (request, response) {
 	response.render('faq.hbs', model)
 })
 
+app.get("/faq/create", function(request, response){
+	response.render("create-faq.hbs")
+})
+
+app.post("/sights/create", function(request, response){	
+	const question = request.body.question
+	const answer = request.body.answer
+	data.faq.push({
+		id: data.faq.at(-1).id + 1,
+		question: question,
+		answer: answer
+	})	
+	response.redirect("/faq")	
+})
+
+app.post("/faq/delete/:id", function(request, response){
+	const id = request.params.id
+	const faqIndex = data.faq.findIndex(
+		f => f.id  == id
+	)
+	data.faq.splice(faqIndex, 1)
+	response.redirect("/faq")
+	
+})
+
+app.get("/faq/update/:id", function (request, response) {
+	const id = request.params.id
+	const faq = data.faq.find(s => s.id == id)
+	const model = {
+		faq: faq
+	}
+	response.render('update-faq.hbs', model)
+})
+
+app.post("/faq/update/:id", function(request, response){
+	const id = request.params.id
+	const newQuestion = request.body.question
+	const newAnswer = request.body.answer
+	const faq = data.faq.find(s => s.id == id)
+	faq.question = newQuestion
+	faq.answer = newAnswer
+	response.redirect("/faq")
+	
+})
+
 app.post("/comments", function(request, response){	
 	const author = request.body.author
 	const headline = request.body.headline
@@ -69,6 +114,39 @@ app.get('/comments', function (request, response) {
 	response.render('comments.hbs', model)
 })
 
+app.get("/comment/update/:id", function (request, response) {
+	const id = request.params.id
+	const comment = data.comments.find(c => c.id == id)
+	const model = {
+		comment: comment
+	}
+	response.render('update-comment.hbs', model)
+})
+
+app.post("/comment/update/:id", function(request, response){
+	const id = request.params.id
+	const newAuthor = request.body.author
+	const newHeadline = request.body.headline
+	const newComment = request.body.comment
+	const newRating = request.body.rating
+	const comment = data.comments.find(c => c.id == id)
+	comment.author = newAuthor
+	comment.headline = newHeadline
+	comment.comment = newComment
+	comment.rating = newRating
+	response.redirect("/comments")
+})
+
+app.post("/comment/delete/:id", function(request, response){
+	const id = request.params.id
+	const commentIndex = data.comments.findIndex(
+		c => c.id  == id
+	)
+	data.comments.splice(commentIndex, 1)
+	response.redirect("/comments")
+	
+})
+
 app.post("/sights/create", function(request, response){	
 	const name = request.body.name
 	const location = request.body.location
@@ -82,8 +160,35 @@ app.post("/sights/create", function(request, response){
 	response.redirect("/sights")	
 })
 
-app.delete("/sight", function(request, response){
+app.post("/sight/delete/:id", function(request, response){
 	const id = request.params.id
+	const sightIndex = data.sights.findIndex(
+		s => s.id  == id
+	)
+	data.sights.splice(sightIndex, 1)
+	response.redirect("/sights")
+	
+})
+
+app.get("/sight/update/:id", function (request, response) {
+	const id = request.params.id
+	const sight = data.sights.find(s => s.id == id)
+	const model = {
+		sight: sight
+	}
+	response.render('update-sight.hbs', model)
+})
+
+app.post("/sight/update/:id", function(request, response){
+	const id = request.params.id
+	const newName = request.body.name
+	const newLocation = request.body.location
+	const newInfo = request.body.info
+	const sight = data.sights.find(s => s.id == id)
+	sight.name = newName
+	sight.location = newLocation
+	sight.info = newInfo
+	response.redirect("/sights")
 	
 })
 

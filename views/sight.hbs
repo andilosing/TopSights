@@ -3,9 +3,10 @@
 	<h1>{{sight.name}}</h1>
 	<h6>Location: {{sight.location}}</h6>
 	<p>{{sight.info}}</p>
-	<form action="/sight" method="delete">	
-	<input type="submit" value="Delete">	
-</form>
+	<form action="/sight/delete/{{sight.id}}" method="POST">	
+		<input type="submit" value="Delete">	
+	</form>
+	<a href="/sight/update/{{sight.id}}">Update</a>
 
 {{else}}
 
