@@ -1,26 +1,46 @@
+<h1 class="text-center">Comments</h1>
+
 {{#if comments.length}}
 
- <div class="container">
-<div class="columns ">
- 
-{{#each comments}}
-<div class="card">
-<p>{{author}}</p>
-<p>{{headline}}</p>
-<p>{{comment}}</p>
-</div>
-{{/each}}
-</div>
-</div>
+	<div class="grid-container">
+
+		{{#each comments}}
+
+			<div>
+				<div class="card border ">
+					<div class="card-header">
+						<div class="card-title h5">{{headline}}</div>
+						<div class="card-subtitle text-gray">Author: {{author}}</div>
+					</div>
+					<div class="card-body"> {{comment}}</div>
+					<div class="card-footer">Rating: ({{rating}}/10)</div>
+				</div>
+			</div>
+
+		{{/each}}
+
+	</div>
+
 {{else}}
-<p>Sorry. At the moment no comments available!</p>
+
+	<p>Sorry. At the moment no comments available!</p>
+
 {{/if}}
 
-<div class="form-group">
-  <label class="form-label" for="input-example-1">Name</label>
-  <input class="form-input" type="text" id="input-example-1" placeholder="Name">
-  <label class="form-label" for="input-example-3">Your comment</label>
-  <textarea class="form-input" id="input-example-3" placeholder="Here you can write your text..." rows="6"></textarea>
-  <button class="btn btn-primary">Submit</button>
-</div>
+<h1 class="text-center">Write a new comment</h1>
 
+<form action="/comments" method="post">	
+	<div>
+		Author: <input type="text" name="author">
+	</div>	
+	<div>
+		Headline: <input type="text" name="headline">
+	</div>
+	<div>
+		Comment: <input type="text" name="comment">
+	</div>
+	<div>
+		Rating: <input type="number" name="rating">
+	</div>	
+	<input type="submit" value="Create">	
+</form>

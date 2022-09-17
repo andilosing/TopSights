@@ -1,3 +1,35 @@
-body{
-    background-color: rgb(158, 156, 156);
+body {
+	background-color: rgb(158, 156, 156);
+}
+
+@media only screen and (max-width: 600px) {
+	.grid-container {
+		margin: 10px;
+		padding: 10px;
+		display: grid;
+		grid-template-columns: repeat(1, 5fr);
+		grid-template-rows: repeat(1, 4fr);
+		grid-column-gap: 10px;
+		grid-row-gap: 10px;
+		grid-auto-flow: row;
+			}
+}
+
+@media only screen and (min-width: 601px) {
+	.grid-container {
+		margin: 10px;
+		padding: 10px;
+		display: grid;
+		grid-template-columns: repeat(2, 5fr);
+		grid-template-rows: repeat(1, 4fr);
+		grid-column-gap: 10px;
+		grid-row-gap: 10px;
+		grid-auto-flow: row
+	}
+}
+
+.border{
+	border-style: solid;
+		border-color: black;
+		border-width: 1px;
 }
