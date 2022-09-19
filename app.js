@@ -1,6 +1,37 @@
 const express = require('express')
 const expressHandlebars = require('express-handlebars')
-const data = require('./data.js')
+const sqlite3 = require('sqlite3')
+
+const db = new sqlite3.Database("topSights-database.db")
+
+db.run(`
+	CREATE TABLE IF NOT EXISTS sights   (
+		id INTEGER PRIMARY KEY,
+		name TEXT,
+		city TEXT,
+		country TEXT,
+		info TEXT 
+	)`
+)
+
+db.run(`
+	CREATE TABLE IF NOT EXISTS comments   (
+		id INTEGER PRIMARY KEY,
+		author TEXT,
+		topic TEXT,
+		text TEXT,
+		rating INTEGER 
+	)`
+)
+
+db.run(`
+	CREATE TABLE IF NOT EXISTS faqs   (
+		id INTEGER PRIMARY KEY,
+		question TEXT,
+		answer TEXT 
+	)`
+)
+
 const app = express()
 
 app.engine('hbs', expressHandlebars.engine({
@@ -30,175 +61,201 @@ app.get('/contact', function (request, response) {
 })
 
 app.get('/sights', function (request, response) {
-	const model = {
-		sights: data.sights
-	}
+	const query = `SELECT * FROM sights`
+	db.all(query, function(error, sights){
+		const model = {
+			sights
+		}
 		response.render('sights.hbs', model)
+	})	
 })
 
 app.get("/sights/create", function(request, response){
 	response.render("create-sight.hbs")
 })
 
-app.get('/faq', function (request, response) {
-	const model = {
-		faq: data.faq
-	}
-	response.render('faq.hbs', model)
+app.get('/faqs', function (request, response) {
+	const query = `SELECT * FROM faqs`
+	db.all(query, function(error, faqs){
+		const model = {
+			faqs
+		}
+		response.render('faqs.hbs', model)
+	})	
 })
 
 app.get("/faq/create", function(request, response){
 	response.render("create-faq.hbs")
 })
 
-app.post("/sights/create", function(request, response){	
+app.post("/faq/create", function(request, response){	
 	const question = request.body.question
 	const answer = request.body.answer
-	data.faq.push({
-		id: data.faq.at(-1).id + 1,
-		question: question,
-		answer: answer
-	})	
-	response.redirect("/faq")	
+
+	const query = `INSERT INTO faqs (question, answer) VALUES (?, ?)`
+	const values = [question, answer,]
+	db.run(query, values, function(error){
+		response.redirect("/faqs")	
+	})
 })
 
 app.post("/faq/delete/:id", function(request, response){
 	const id = request.params.id
-	const faqIndex = data.faq.findIndex(
-		f => f.id  == id
-	)
-	data.faq.splice(faqIndex, 1)
-	response.redirect("/faq")
+	const query = `DELETE FROM faqs WHERE id = ?`
+	const values = [id]
+	
+	db.run(query, values, function(error){
+		response.redirect("/faqs")
+	})	
 	
 })
 
 app.get("/faq/update/:id", function (request, response) {
 	const id = request.params.id
-	const faq = data.faq.find(s => s.id == id)
-	const model = {
-		faq: faq
-	}
-	response.render('update-faq.hbs', model)
+
+	const query = `SELECT * FROM faqs WHERE id = ?`
+	const values = [id]
+	db.get(query, values, function(error, faq){
+		const model = {
+			faq
+		}
+		response.render('update-faq.hbs', model)
+	})	
 })
 
 app.post("/faq/update/:id", function(request, response){
 	const id = request.params.id
 	const newQuestion = request.body.question
 	const newAnswer = request.body.answer
-	const faq = data.faq.find(s => s.id == id)
-	faq.question = newQuestion
-	faq.answer = newAnswer
-	response.redirect("/faq")
 	
+	const query = `UPDATE faqs SET question = ?, answer = ? WHERE id = ?`
+	const values = [newQuestion, newAnswer, id]
+	db.run(query, values, function(error){
+		response.redirect("/faqs")
+	})
 })
 
-app.post("/comments", function(request, response){	
+app.post("/comments/create", function(request, response){	
 	const author = request.body.author
-	const headline = request.body.headline
-	const comment = request.body.comment
+	const topic = request.body.topic
+	const text = request.body.text
 	const rating = request.body.rating
-	data.comments.push({
-		id: data.comments.at(-1).id + 1,
-		author: author,
-		headline: headline,
-		comment: comment,
-		rating: rating
-	})	
-	response.redirect("/comments")	
+
+	const query = `INSERT INTO comments (author, topic, text, rating) VALUES (?, ?, ?, ?)`
+	const values = [author, topic, text, rating]
+	db.run(query, values, function(error){
+		response.redirect("/comments")	
+	})
 })
 
 app.get('/comments', function (request, response) {
-	const model = {
-		comments: data.comments
-	}
-	response.render('comments.hbs', model)
+	const query = `SELECT * FROM comments`
+	db.all(query, function(error, comments){
+		const model = {
+			comments
+		}
+		response.render('comments.hbs', model)
+	})
 })
 
 app.get("/comment/update/:id", function (request, response) {
 	const id = request.params.id
-	const comment = data.comments.find(c => c.id == id)
-	const model = {
-		comment: comment
-	}
-	response.render('update-comment.hbs', model)
+
+	const query = `SELECT * FROM comments WHERE id = ?`
+	const values = [id]
+	db.get(query, values, function(error, comment){
+		const model = {
+			comment
+		}
+		response.render('update-comment.hbs', model)
+	})	
 })
 
 app.post("/comment/update/:id", function(request, response){
 	const id = request.params.id
 	const newAuthor = request.body.author
-	const newHeadline = request.body.headline
-	const newComment = request.body.comment
+	const newTopic = request.body.topic
+	const newText = request.body.text
 	const newRating = request.body.rating
-	const comment = data.comments.find(c => c.id == id)
-	comment.author = newAuthor
-	comment.headline = newHeadline
-	comment.comment = newComment
-	comment.rating = newRating
-	response.redirect("/comments")
+
+	const query = `UPDATE comments SET author = ?, topic = ?, text = ?, rating = ? WHERE id = ?`
+	const values = [newAuthor, newTopic, newText, newRating, id]
+	db.run(query, values, function(error){
+		response.redirect("/comments")
+	})
 })
 
 app.post("/comment/delete/:id", function(request, response){
 	const id = request.params.id
-	const commentIndex = data.comments.findIndex(
-		c => c.id  == id
-	)
-	data.comments.splice(commentIndex, 1)
-	response.redirect("/comments")
+	const query = `DELETE FROM comments WHERE id = ?`
+	const values = [id]
+	
+	db.run(query, values, function(error){
+		response.redirect("/comments")
+	})	
 	
 })
 
 app.post("/sights/create", function(request, response){	
 	const name = request.body.name
-	const location = request.body.location
+	const city = request.body.city
+	const country = request.body.country
 	const info = request.body.info
-	data.sights.push({
-		id: data.sights.at(-1).id + 1,
-		name: name,
-		location: location,
-		info: info
-	})	
-	response.redirect("/sights")	
+
+	const query = `INSERT INTO sights (name, city, country, info) VALUES (?, ?, ?, ?)`
+	const values = [name, city, country, info]
+	db.run(query, values, function(error){
+		response.redirect("/sights")	
+	})
 })
 
 app.post("/sight/delete/:id", function(request, response){
 	const id = request.params.id
-	const sightIndex = data.sights.findIndex(
-		s => s.id  == id
-	)
-	data.sights.splice(sightIndex, 1)
-	response.redirect("/sights")
+	const query = `DELETE FROM sights WHERE id = ?`
+	const values = [id]
 	
+	db.run(query, values, function(error){
+		response.redirect("/sights")
+	})	
 })
 
 app.get("/sight/update/:id", function (request, response) {
 	const id = request.params.id
-	const sight = data.sights.find(s => s.id == id)
-	const model = {
-		sight: sight
-	}
-	response.render('update-sight.hbs', model)
+
+	const query = `SELECT * FROM sights WHERE id = ?`
+	const values = [id]
+	db.get(query, values, function(error, sight){
+		const model = {
+			sight
+		}
+		response.render('update-sight.hbs', model)
+	})	
 })
 
 app.post("/sight/update/:id", function(request, response){
 	const id = request.params.id
 	const newName = request.body.name
-	const newLocation = request.body.location
+	const newCity = request.body.city
+	const newCountry = request.body.country
 	const newInfo = request.body.info
-	const sight = data.sights.find(s => s.id == id)
-	sight.name = newName
-	sight.location = newLocation
-	sight.info = newInfo
-	response.redirect("/sights")
-	
+
+	const query = `UPDATE sights SET name = ?, city = ?, country = ?, info = ? WHERE id = ?`
+	const values = [newName, newCity, newCountry, newInfo, id]
+	db.run(query, values, function(error){
+		response.redirect("/sights")
+	})
 })
 
 app.get("/sights/:id", function (request, response) {
 	const id = request.params.id
-	const sight = data.sights.find(s => s.id == id)
-	const model = {
-		sight: sight
-	}
-	response.render('sight.hbs', model)
+	const query = `SELECT * FROM SIGHTS WHERE id = ?`
+	const values = [id]
+	db.get(query, values, function(error, sight){
+		const model = {
+			sight
+		}
+		response.render('sight.hbs', model)
+	})
 })
 
 app.listen(8080)

@@ -9,10 +9,10 @@
 			<div>
 				<div class="card border ">
 					<div class="card-header">
-						<div class="card-title h5">{{headline}}</div>
+						<div class="card-title h5">{{topic}}</div>
 						<div class="card-subtitle text-gray">Author: {{author}}</div>
 					</div>
-					<div class="card-body"> {{comment}}</div>
+					<div class="card-body"> {{text}}</div>
 					<div class="card-footer">Rating: ({{rating}}/10)</div>
 					<div><a href="/comment/update/{{id}}">Update</a></div>
 					<form action="/comment/delete/{{id}}" method="POST">	
@@ -33,15 +33,15 @@
 
 <h1 class="text-center">Write a new comment</h1>
 
-<form action="/comments" method="post">	
+<form action="/comments/create" method="post">	
 	<div>
 		Author: <input type="text" name="author">
 	</div>	
 	<div>
-		Headline: <input type="text" name="headline">
+		Topic: <input type="text" name="topic">
 	</div>
 	<div>
-		Comment: <input type="text" name="comment">
+		Text: <input type="text" name="text">
 	</div>
 	<div>
 		Rating: <input type="number" name="rating">
