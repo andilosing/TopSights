@@ -18,16 +18,13 @@ body {
 body > footer{
 	max-width: 60%;
 	border-top: 3px dotted black;
-	margin: 0 auto;
+	margin: 20px auto;
 	text-align: center;
 	font-size: 1em;
 	padding: 1.25em;
 }
 
-button{
-	position: relative; 
-  	left: 1.4em;
-}
+
 
 ::first-line{
 	text-align: center;
@@ -38,13 +35,13 @@ h1::first-letter{
 	font-size: larger;
 }
 
-.box{
+.sight-box{
 	margin: 5%;
 	text-align: center;
 }
 
 .grid-container-faq {
-	margin: 10px;
+	margin: 10px 15%;
 	padding: 10px;
 	display: grid;
 	grid-template-columns: repeat(1, 5fr);
@@ -54,7 +51,7 @@ h1::first-letter{
 	grid-auto-flow: row;
 		}
 
-.lower-line{
+.lower-line-faq{
 	border-bottom: 1px solid black;
 }
 
@@ -128,6 +125,8 @@ input[type=text], select, textarea {
 		grid-row-gap: 10px;
 		grid-auto-flow: row
 	}
+
+	
 }
   
   @media screen and (max-width: 700px) {
@@ -149,6 +148,17 @@ input[type=text], select, textarea {
 	grid-row-gap: 10px;
 	grid-auto-flow: row;
 		}
+
+	.grid-container-faq {
+		margin: 10px 10px;
+		padding: 10px;
+		display: grid;
+		grid-template-columns: repeat(1, 5fr);
+		grid-template-rows: repeat(1, 4fr);
+		grid-column-gap: 10px;
+		grid-row-gap: 10px;
+		grid-auto-flow: row;
+				}
 
  
  }
