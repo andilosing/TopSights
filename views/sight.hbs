@@ -1,12 +1,16 @@
+<div class="box">
+
 {{#if sight}}
 
 	<h1>{{sight.name}}</h1>
 	<h6>Location: {{sight.city}}, {{sight.country}}</h6>
 	<p>{{sight.info}}</p>
-	<form action="/sight/delete/{{sight.id}}" method="POST">	
+	<form action="/sight/delete/{{sight.id}}" method="POST" >	
 		<input type="submit" value="Delete">	
 	</form>
-	<a href="/sight/update/{{sight.id}}">Update</a>
+	<form action="/sight/update/{{sight.id}}" method="GET" >	
+		<input type="submit" value="Update">	
+	</form>
 
 {{else}}
 
@@ -14,3 +18,5 @@
 	<p>That sight does not exist!</p>
 
 {{/if}}
+
+</div>

@@ -7,14 +7,20 @@
 		{{#each comments}}
 
 			<div>
-				<div class="card border ">
+				<div class="card border bg-gray ">
 					<div class="card-header">
-						<div class="card-title h5">{{topic}}</div>
+						<div class="card-title h5 bg-primary text-center">{{topic}}</div>
 						<div class="card-subtitle text-gray">Author: {{author}}</div>
 					</div>
 					<div class="card-body"> {{text}}</div>
-					<div class="card-footer">Rating: ({{rating}}/10)</div>
-					<div><a href="/comment/update/{{id}}">Update</a></div>
+					<div class="card-footer text-center">
+						<p class="bg-secondary">Rating: ({{rating}}/10)</p>	
+					</div>				
+					<div>
+						<form action="/comment/update/{{id}}" method="GET">	
+						<input type="submit" value="Update">	
+						</div>
+					</form>
 					<form action="/comment/delete/{{id}}" method="POST">	
 						<input type="submit" value="Delete">	
 					</form>
@@ -41,10 +47,10 @@
 		Topic: <input type="text" name="topic">
 	</div>
 	<div>
-		Text: <input type="text" name="text">
+		Text: <textarea  name="text" placeholder="Write something.." style="height:200px"></textarea>
 	</div>
 	<div>
-		Rating: <input type="number" name="rating">
+		Rating: <input type="number" min="1" max="10" name="rating">
 	</div>	
 	<input type="submit" value="Create">	
 </form>
