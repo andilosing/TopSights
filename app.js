@@ -4,14 +4,18 @@ const sqlite3 = require('sqlite3')
 
 const db = new sqlite3.Database("topSights-database.db")
 
+
+const multer = require('multer')
+const upload = multer({storage:multer.memoryStorage()})
+
 db.run(`
 	CREATE TABLE IF NOT EXISTS sights   (
 		id INTEGER PRIMARY KEY,
 		name TEXT,
 		city TEXT,
 		country TEXT,
-		info TEXT 
-	)`
+		info TEXT,
+		image LONGTEXT )`
 )
 
 db.run(`
@@ -196,14 +200,15 @@ app.post("/comment/delete/:id", function(request, response){
 	
 })
 
-app.post("/sights/create", function(request, response){	
+app.post("/sights/create", upload.single('image'), function(request, response){	
 	const name = request.body.name
 	const city = request.body.city
 	const country = request.body.country
 	const info = request.body.info
+	const image = request.file.buffer.toString('base64')
 
-	const query = `INSERT INTO sights (name, city, country, info) VALUES (?, ?, ?, ?)`
-	const values = [name, city, country, info]
+	const query = `INSERT INTO sights (name, city, country, info, image) VALUES (?, ?, ?, ?, ?)`
+	const values = [name, city, country, info, image]
 	db.run(query, values, function(error){
 		response.redirect("/sights")	
 	})
@@ -232,15 +237,16 @@ app.get("/sight/update/:id", function (request, response) {
 	})	
 })
 
-app.post("/sight/update/:id", function(request, response){
+app.post("/sight/update/:id", upload.single('image'), function(request, response){
 	const id = request.params.id
 	const newName = request.body.name
 	const newCity = request.body.city
 	const newCountry = request.body.country
 	const newInfo = request.body.info
+	const newImage = request.file.buffer.toString('base64')
 
-	const query = `UPDATE sights SET name = ?, city = ?, country = ?, info = ? WHERE id = ?`
-	const values = [newName, newCity, newCountry, newInfo, id]
+	const query = `UPDATE sights SET name = ?, city = ?, country = ?, info = ?, image = ? WHERE id = ?`
+	const values = [newName, newCity, newCountry, newInfo, newImage, id]
 	db.run(query, values, function(error){
 		response.redirect("/sights")
 	})

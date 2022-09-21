@@ -73,7 +73,14 @@ input[type=text], select, textarea {
   }
 
  
-
+  input[type=file], select {
+	width: 60%;
+	padding: 12px 20px;
+	margin: 15px 0;
+	display: inline-block;
+	border-radius: 8px;
+	box-sizing: border-box;
+  }
 
   input[type=number], select {
 	width: 20%;
@@ -114,7 +121,6 @@ input[type=text], select, textarea {
   }
 
 
-@media only screen and (min-width:701px) {
 	.grid-container {
 		margin: 10px;
 		padding: 10px;
@@ -127,7 +133,6 @@ input[type=text], select, textarea {
 	}
 
 	
-}
   
   @media screen and (max-width: 700px) {
 	 input[type=submit] {
@@ -137,6 +142,9 @@ input[type=text], select, textarea {
 	input[type=number] {
 		width: 100%;
   }
+  input[type=file] {
+	width: 100%;
+}
 
   .grid-container {
 	margin: 10px;

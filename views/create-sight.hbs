@@ -1,6 +1,6 @@
 
 <h1 class="text-center">Create Sight</h1>
-<form action="/sights/create" method="post">	
+<form action="/sights/create" method="post" enctype="multipart/form-data">	
 	<div>
 		Name: <input type="text" name="name" placeholder="Name">
 	</div>	
@@ -12,6 +12,9 @@
 	</div>
     <div>
 		Info: <textarea  type ="text" name="info" placeholder="Write something.." style="height:200px"></textarea>
+	</div>
+	<div>
+		Upload image: <Input  type ="file" name="image">
 	</div>	
 	<input type="submit" value="Create">	
 </form>

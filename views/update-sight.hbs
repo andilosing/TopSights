@@ -1,5 +1,5 @@
 <h1>Update Sight</h1>
-<form method ="POST">
+<form method ="POST" enctype="multipart/form-data">
 	<div>
 		<div>
 			Name: <input type="text" name="name" value="{{sight.name}}">
@@ -12,6 +12,9 @@
 		</div>
 		<div>
 			Info: <textarea  type="text" name="info"  style="height:200px">{{sight.info}}</textarea>
+		</div>
+		<div>
+			Upload image: <Input  type ="file" name="image" >
 		</div>
 			<input type="submit" value="Update">
 	</div>

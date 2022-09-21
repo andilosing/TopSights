@@ -4,6 +4,7 @@
 
 	<h1>{{sight.name}}</h1>
 	<h6>Location: {{sight.city}}, {{sight.country}}</h6>
+	<img alt="Embedded Image" src="data:image/png;base64, {{sight.image}}" height="24%" width="60%" class="img-responsive p-centered">
 	<p>{{sight.info}}</p>
 	<form action="/sight/delete/{{sight.id}}" method="POST" >	
 		<input type="submit" value="Delete">	
