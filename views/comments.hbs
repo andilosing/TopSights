@@ -1,5 +1,10 @@
 <h1 class="text-center">Comments</h1>
 
+<form action="/comments/create" method="GET">	
+								<input type="submit" value="Create new comment">	
+							</form>
+
+
 {{#if comments.length}}
 
 	<div class="grid-container">
@@ -37,20 +42,3 @@
 
 {{/if}}
 
-<h1 class="text-center">Write a new comment</h1>
-
-<form action="/comments/create" method="post">	
-	<div>
-		Author: <input type="text" name="author">
-	</div>	
-	<div>
-		Topic: <input type="text" name="topic">
-	</div>
-	<div>
-		Text: <textarea  name="text" placeholder="Write something.." style="height:200px"></textarea>
-	</div>
-	<div>
-		Rating: <input type="number" min="1" max="10" name="rating">
-	</div>	
-	<input type="submit" value="Create">	
-</form>

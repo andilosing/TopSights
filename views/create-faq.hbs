@@ -1,10 +1,22 @@
 <h1 class="text-center">Create FAQ</h1>
+
+{{#if errorMessages.length}}
+	<p>Couldn't create the FAQ because:</p>
+	<ul>
+		{{#each errorMessages}}
+			<li>{{this}}</li>
+		{{/each}}
+	</ul>
+{{/if}}
+
+
+
 <form action="/faq/create" method="post">	
 	<div>
-		Question: <input type="text" name="question">
+		Question: <input type="text" name="question" value="{{question}}">
 	</div>	
 	<div>
-		Answer: <textarea  name="answer" placeholder="Write answer.." style="height:200px"></textarea>
+		Answer: <textarea  name="answer" style="height:200px">{{answer}}</textarea>
 	</div>
 	<input type="submit" value="Create">	
 </form>

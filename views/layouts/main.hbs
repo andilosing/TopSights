@@ -29,6 +29,12 @@
 		<section class="navbar-section">
 			<a href="/about" class="btn btn-link">About</a>
 			<a href="/contact" class="btn btn-link">Contact</a>
+			{{#unless isLoggedIn}}
+			<a href="/login" class="btn btn-link">Login</a>
+			{{/unless}}
+			{{#if isLoggedIn}}
+			<a href="/logout" class="btn btn-link">Login</a>
+			{{/if}}
 		</section>
 	</header>
 

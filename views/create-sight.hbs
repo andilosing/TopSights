@@ -1,20 +1,32 @@
 
 <h1 class="text-center">Create Sight</h1>
+
+{{#if errorMessages.length}}
+	<p>Couldn't create the sight because:</p>
+	<ul>
+		{{#each errorMessages}}
+			<li>{{this}}</li>
+		{{/each}}
+	</ul>
+{{/if}}
+
+
 <form action="/sights/create" method="post" enctype="multipart/form-data">	
 	<div>
-		Name: <input type="text" name="name" placeholder="Name">
+		Name: <input type="text" name="name"  value="{{name}}">
 	</div>	
 	<div>
-		City: <input type="text" name="city">
+		City: <input type="text" name="city" value="{{city}}">
 	</div>
 	<div>
-		Country: <input type="text" name="country">
+		Country: <input type="text" name="country" value="{{country}}">
 	</div>
+	<!-- funktioniert nicht , buffed reader auch nicht!-->
     <div>
-		Info: <textarea  type ="text" name="info" placeholder="Write something.." style="height:200px"></textarea>
+		Info: <textarea  type ="text" name="info"  style="height:200px" >{{info}}</textarea>
 	</div>
 	<div>
-		Upload image: <Input  type ="file" name="image">
+		Upload image: <Input  type ="file" name="image" value="{{image}}">
 	</div>	
 	<input type="submit" value="Create">	
 </form>

@@ -1,0 +1,26 @@
+<h1 class="text-center">Write a new comment</h1>
+
+{{#if errorMessages.length}}
+	<p>Couldn't create the Comment because:</p>
+	<ul>
+		{{#each errorMessages}}
+			<li>{{this}}</li>
+		{{/each}}
+	</ul>
+{{/if}}
+
+<form action="/comments/create" method="post" >	
+	<div>
+		Author: <input type="text" name="author" value="{{author}}">
+	</div>	
+	<div>
+		Topic: <input type="text" name="topic" value="{{topic}}">
+	</div>
+	<div>
+		Text: <textarea  name="text"  style="height:200px">{{text}}</textarea>
+	</div>
+	<div>
+		Rating: <input type="number" min="1" max="10" name="rating" value="{{rating}}">
+	</div>	
+	<input type="submit" value="Create">	
+</form>
