@@ -1,7 +1,19 @@
-<h1 class="text-center">FAQ</h1>
+<h1 class="text-center">FAQs</h1>
 <form action="/faq/create" method="GET">	
 								<input type="submit" value="Create new FAQ">	
 							</form>
+
+
+							{{#if errorMessages.length}}
+							<div class="bg-primary">
+	<p>Couldn't delete the FAQ because:</p>
+	<ul>
+		{{#each errorMessages}}
+			<li>{{this}}</li>
+		{{/each}}
+	</ul>
+	</div>
+{{/if}}
 
 
 <div class="accordion">

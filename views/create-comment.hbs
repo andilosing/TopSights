@@ -1,12 +1,14 @@
 <h1 class="text-center">Write a new comment</h1>
 
 {{#if errorMessages.length}}
+<div class="bg-primary">
 	<p>Couldn't create the Comment because:</p>
 	<ul>
 		{{#each errorMessages}}
 			<li>{{this}}</li>
 		{{/each}}
 	</ul>
+	</div>
 {{/if}}
 
 <form action="/comments/create" method="post" >	

@@ -1,13 +1,23 @@
 const express = require('express')
 const expressHandlebars = require('express-handlebars')
 const sqlite3 = require('sqlite3')
-const expressSession = require("express-session")
-
+const expressSession = require('express-session')
 const db = new sqlite3.Database("topSights-database.db")
 
 
 const multer = require('multer')
-const upload = multer({storage:multer.memoryStorage()})
+const upload = multer({
+	storage:multer.memoryStorage(),
+	/*fileFilter: (req, file, cb) => {
+		if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+		  cb(null, true);
+		} else {
+		  cb(null, false);
+		  return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+		}
+	  }*/
+})
+
 
 const SIGHT_NAME_MAX_LENGTH = 40
 const SIGHT_CITY_MAX_LENGTH = 40
@@ -84,13 +94,9 @@ app.use(
 	})
 )
 
-//eigene middleware
-
 app.use(function(request, response, next){
 	const isLoggedIn = request.session.isLoggedIn
-
 	response.locals.isLoggedIn = isLoggedIn
-
 	next()
 })
 
@@ -110,26 +116,63 @@ app.get('/login', function (request, response) {
 	response.render('login.hbs')
 })
 
-//ändern in post request -- dafür neue seite
 app.get('/logout', function (request, response) {
+	response.render('logout.hbs')
+})
+
+app.get('/delete/error', function (request, response) {
+	response.render('delete-error.hbs')
+})
+
+app.post('/logout', function (request, response) {
+	const errorMessages = []
+	if(request.session.isLoggedIn){
 	request.session.isLoggedIn = false
 	response.redirect('/')
+	} else{
+		errorMessages.push('You are not logged in')
+		const model = {
+			errorMessages}
+		response.render('logout.hbs', model)
+	}
 })
 
 app.post('/login', function(request, response){
 	const enteredUsername = request.body.username
 	const enteredPassword = request.body.password
 
-	if(CORRECT_ADMIN_USERNAME == enteredUsername && CORRECT_ADMIN_PASSWORD == enteredPassword){
-		request.session.isLoggedIn = true
-		response.redirect('/')
-	} else{
-		response.redirect('/sights')
-	// fehlerbearbeitung
+	const errorMessages = []
 
+	if(!request.session.isLoggedIn){
+		if(CORRECT_ADMIN_USERNAME == enteredUsername && CORRECT_ADMIN_PASSWORD == enteredPassword){
+			request.session.isLoggedIn = true
+			response.redirect('/')
+		} else{
+			errorMessages.push('Username and password do not match')
+
+			const model = {
+				errorMessages,
+				enteredUsername,
+				enteredPassword					}
+			response.render('login.hbs', model)
+
+
+		}
+	} else{ 
+		errorMessages.push('You are already logged in')
+		const model = {
+			errorMessages,
+			enteredUsername,
+			enteredPassword					}
+		response.render('login.hbs', model)
+		
+		
 	}
 
+
 })
+
+
 
 function getValidationErrorsForSight(name, city, country, info){
 	const errorMessages = []
@@ -161,6 +204,7 @@ function getValidationErrorsForSight(name, city, country, info){
 	return errorMessages
 }
 
+
 app.get('/sights', function (request, response) {
 	const query = `SELECT * FROM sights`
 	db.all(query, function(error, sights){
@@ -180,9 +224,28 @@ app.post("/sights/create", upload.single('image'), function(request, response){
 	const city = request.body.city
 	const country = request.body.country
 	const info = request.body.info
-	const image = request.file.buffer.toString('base64')
+	let image = ""
+	if(request.file == undefined ){
+		 
+	} else{
+	if(request.file.mimetype == "image/jpg" || request.file.mimetype == "image/png"  || request.file.mimetype == "image/jpeg"){
+		console.log('es geht')
+		 image = request.file.buffer.toString('base64')
+	}else{
+		
+		
+	image = "/placeholderIMG.png"
+	}}
+	
+	
+	
+
 
 	const errorMessages = getValidationErrorsForSight(name, city, country, info)
+
+	if(!request.session.isLoggedIn){
+		errorMessages.push('You are not logged in')
+	}
 	
 	if(errorMessages.length == 0){
 
@@ -232,10 +295,46 @@ app.post("/sight/delete/:id", function(request, response){
 	const id = request.params.id
 	const query = `DELETE FROM sights WHERE id = ?`
 	const values = [id]
+
+	const errorMessages = []
+
+	if(!request.session.isLoggedIn){
+		errorMessages.push('You are not logged in')
+	}
+
+	if(errorMessages.length == 0){
 	
 	db.run(query, values, function(error){
-		response.redirect("/sights")
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				pagePath: "/sights",
+				pageName: "sights",
+				deleteErrorFor: "sight"
+			}
+
+			response.render('delete-error.hbs', model)
+		}else{
+			response.redirect("/sights")
+		}
+
 	})	
+
+	}else{
+
+		const model= {
+			errorMessages,
+			pagePath: "/sights",
+			pageName: "sights",
+			deleteErrorFor: "sight"
+		}
+		response.render('delete-error.hbs', model)
+
+	}
 })
 
 app.get("/sight/update/:id", function (request, response) {
@@ -260,6 +359,10 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 	const newImage = request.file.buffer.toString('base64')
 
 	const errorMessages = getValidationErrorsForSight(newName, newCity, newCountry, newInfo)
+
+	if(!request.session.isLoggedIn){
+		errorMessages.push('You are not logged in')
+	}
 
 	if(errorMessages.length == 0){
 		
@@ -355,6 +458,10 @@ app.post("/faq/create", function(request, response){
 
 	const errorMessages = getValidationErrorsForFaq(question, answer)
 
+	if(!request.session.isLoggedIn){
+		errorMessages.push('You are not logged in')
+	}
+
 	if(errorMessages.length == 0){
 
 		const query = `INSERT INTO faqs (question, answer) VALUES (?, ?)`
@@ -392,10 +499,46 @@ app.post("/faq/delete/:id", function(request, response){
 	const id = request.params.id
 	const query = `DELETE FROM faqs WHERE id = ?`
 	const values = [id]
+
+	const errorMessages = []
+
+	if(!request.session.isLoggedIn){
+		errorMessages.push('You are not logged in')
+	}
+
+	if(errorMessages.length == 0){
 	
 	db.run(query, values, function(error){
-		response.redirect("/faqs")
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				pagePath: "/faqs",
+				pageName: "faqs",
+				deleteErrorFor: "faq"
+			}
+
+			response.render('delete-error.hbs', model)
+		}else{
+			response.redirect("/faqs")
+		}
+
 	})	
+
+	}else{
+
+		const model= {
+			errorMessages,
+			pagePath: "/faqs",
+			pageName: "faqs",
+			deleteErrorFor: "faq"
+		}
+		response.render('delete-error.hbs', model)
+
+	}
 	
 })
 
@@ -418,6 +561,10 @@ app.post("/faq/update/:id", function(request, response){
 	const newAnswer = request.body.answer
 
 	const errorMessages = getValidationErrorsForFaq(newQuestion, newAnswer)
+
+	if(!request.session.isLoggedIn){
+		errorMessages.push('You are not logged in')
+	}
 
 	if(errorMessages.length == 0){
 	
@@ -514,6 +661,10 @@ app.post("/comments/create", function(request, response){
 
 	const errorMessages = getValidationErrorsForComment(author, topic, text, rating)
 
+	if(!request.session.isLoggedIn){
+		errorMessages.push('You are not logged in')
+	}
+
 	if(errorMessages.length == 0){
 
 		const query = `INSERT INTO comments (author, topic, text, rating) VALUES (?, ?, ?, ?)`
@@ -576,6 +727,10 @@ app.post("/comment/update/:id", function(request, response){
 
 	const errorMessages = getValidationErrorsForComment(newAuthor, newTopic, newText, newRating)
 
+	if(!request.session.isLoggedIn){
+		errorMessages.push('You are not logged in')
+	}
+
 	if(errorMessages.length == 0){
 
 		const query = `UPDATE comments SET author = ?, topic = ?, text = ?, rating = ? WHERE id = ?`
@@ -622,10 +777,47 @@ app.post("/comment/delete/:id", function(request, response){
 	const id = request.params.id
 	const query = `DELETE FROM comments WHERE id = ?`
 	const values = [id]
+
+
+	const errorMessages = []
+
+	if(!request.session.isLoggedIn){
+		errorMessages.push('You are not logged in')
+	}
+
+	if(errorMessages.length == 0){
 	
 	db.run(query, values, function(error){
-		response.redirect("/comments")
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				pagePath: "/comments",
+				pageName: "comments",
+				deleteErrorFor: "comment"
+			}
+
+			response.render('delete-error.hbs', model)
+		}else{
+			response.redirect("/comments")
+		}
+
 	})	
+
+	}else{
+
+		const model= {
+			errorMessages,
+			pagePath: "/comments",
+			pageName: "comments",
+			deleteErrorFor: "comment"
+		}
+		response.render('delete-error.hbs', model)
+
+	}
 	
 })
 

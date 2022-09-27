@@ -1,12 +1,14 @@
 <h1>Update FAQ</h1>
 
 {{#if errorMessages.length}}
+	<div class="bg-primary">
 	<p>Couldn't update the FAQ because:</p>
 	<ul>
 		{{#each errorMessages}}
 			<li>{{this}}</li>
 		{{/each}}
 	</ul>
+	</div>
 {{/if}}
 
 <form method ="POST">

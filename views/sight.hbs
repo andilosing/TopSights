@@ -1,5 +1,16 @@
 <div class="sight-box">
 
+	{{#if errorMessages.length}}
+	<div class="bg-primary">
+	<p>Couldn't delete the FAQ because:</p>
+	<ul>
+		{{#each errorMessages}}
+			<li>{{this}}</li>
+		{{/each}}
+	</ul>
+	</div>
+{{/if}}
+
 {{#if sight}}
 
 	<h1>{{sight.name}}</h1>

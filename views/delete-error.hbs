@@ -1,0 +1,16 @@
+<h1>Delete error</h1>
+
+{{#if errorMessages.length}}
+<div class="bg-primary">
+	<p>Couldn't delete the {{deleteErrorFor}} because:</p>
+	<ul>
+		{{#each errorMessages}}
+			<li>{{this}}</li>
+		{{/each}}
+	</ul>
+	</div>
+
+    <form action="{{pagePath}}" method="GET" >	
+		<input type="submit" value="Go back to {{pageName}}">	
+	</form>
+{{/if}}

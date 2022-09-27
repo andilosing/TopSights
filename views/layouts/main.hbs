@@ -18,35 +18,38 @@
 <body>
 
 	<header class="navbar bg-dark">
-		<section class="navbar-section">
-			<a href="/sights" class="btn btn-link">Sights</a>
-			<a href="/faqs" class="btn btn-link">FAQs</a>
-			<a href="/comments" class="btn btn-link">Comments</a>
-		</section>
-		<section class="navbar-center">
-			<a href="/" class="navbar-brand mr-2 ">TopSights</a>
-		</section>
-		<section class="navbar-section">
-			<a href="/about" class="btn btn-link">About</a>
-			<a href="/contact" class="btn btn-link">Contact</a>
-			{{#unless isLoggedIn}}
-			<a href="/login" class="btn btn-link">Login</a>
-			{{/unless}}
-			{{#if isLoggedIn}}
-			<a href="/logout" class="btn btn-link">Login</a>
-			{{/if}}
-		</section>
+		
+		
+			<section class="navbar-section">
+				<a href="/sights" class="btn btn-link">Sights</a>
+				<a href="/faqs" class="btn btn-link">FAQs</a>
+				<a href="/comments" class="btn btn-link">Comments</a>
+			</section>
+			<section class="navbar-center">
+				<a href="/" class="navbar-brand mr-2 ">TopSights</a>
+			</section>
+			<section class="navbar-section">
+				{{#unless isLoggedIn}}
+				<a href="/login" class="btn btn-link">Login</a>
+				{{/unless}}
+				{{#if isLoggedIn}}
+				<a href="/logout" class="btn btn-link">Logout</a>
+				{{/if}}
+			</section>
+		
+	
 	</header>
+
 
 	<body>
 		{{{body}}}
 	</body>
 	
 
-	<footer>
-
-		Copyright Andreas Losing
-
+	<footer >
+		Copyright Andreas Losing 2022 
+		<a href="/about" class="btn btn-link">About</a>
+		<a href="/contact" class="btn btn-link">Contact</a>
 	</footer>
 
 </body>

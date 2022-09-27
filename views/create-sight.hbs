@@ -2,12 +2,14 @@
 <h1 class="text-center">Create Sight</h1>
 
 {{#if errorMessages.length}}
+<div class="bg-primary">
 	<p>Couldn't create the sight because:</p>
 	<ul>
 		{{#each errorMessages}}
 			<li>{{this}}</li>
 		{{/each}}
 	</ul>
+	</div>
 {{/if}}
 
 
@@ -26,7 +28,7 @@
 		Info: <textarea  type ="text" name="info"  style="height:200px" >{{info}}</textarea>
 	</div>
 	<div>
-		Upload image: <Input  type ="file" name="image" value="{{image}}">
+		Upload image: <Input  type ="file" name="image" accept="image/*, .png, .jpg, .jpeg"value="{{image}}">
 	</div>	
 	<input type="submit" value="Create">	
 </form>
