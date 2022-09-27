@@ -174,7 +174,7 @@ app.post('/login', function(request, response){
 
 
 
-function getValidationErrorsForSight(name, city, country, info){
+function getValidationErrorsForSight(name, city, country, info, requestFile){
 	const errorMessages = []
 	
 	if(name == ""){
@@ -201,6 +201,18 @@ function getValidationErrorsForSight(name, city, country, info){
 		errorMessages.push("Info must be shorter than "+SIGHT_INFO_MAX_LENGTH+" characters long")
 	}
 
+
+	if(requestFile == undefined ){
+		image = "placeholder"
+	} else{
+	if(requestFile.mimetype == "image/jpg" || requestFile.mimetype == "image/png"  || requestFile.mimetype == "image/jpeg"){
+		console.log('es geht')
+		 image = requestFile.buffer.toString('base64')
+	}else{
+		errorMessages.push("Image type must be .png, .jpg or .jpeg")	
+	
+	}}
+
 	return errorMessages
 }
 
@@ -225,23 +237,15 @@ app.post("/sights/create", upload.single('image'), function(request, response){
 	const country = request.body.country
 	const info = request.body.info
 	let image = ""
-	if(request.file == undefined ){
-		 
-	} else{
-	if(request.file.mimetype == "image/jpg" || request.file.mimetype == "image/png"  || request.file.mimetype == "image/jpeg"){
-		console.log('es geht')
-		 image = request.file.buffer.toString('base64')
-	}else{
-		
-		
-	image = "/placeholderIMG.png"
-	}}
+
+	
+	
 	
 	
 	
 
 
-	const errorMessages = getValidationErrorsForSight(name, city, country, info)
+	const errorMessages = getValidationErrorsForSight(name, city, country, info, request.file)
 
 	if(!request.session.isLoggedIn){
 		errorMessages.push('You are not logged in')
