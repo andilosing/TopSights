@@ -2,39 +2,39 @@ const express = require('express')
 const expressHandlebars = require('express-handlebars')
 const sqlite3 = require('sqlite3')
 const expressSession = require('express-session')
+
 const db = new sqlite3.Database("topSights-database.db")
-
-
 const multer = require('multer')
 const upload = multer({
 	storage:multer.memoryStorage(),
-	/*fileFilter: (req, file, cb) => {
-		if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
-		  cb(null, true);
-		} else {
-		  cb(null, false);
-		  return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
-		}
-	  }*/
 })
 
+const app = express()
+app.engine('hbs', expressHandlebars.engine({
+	defaultLayout: 'main.hbs'
+}))
 
+// Const for sight input validation
 const SIGHT_NAME_MAX_LENGTH = 40
 const SIGHT_CITY_MAX_LENGTH = 40
 const SIGHT_COUNTRY_MAX_LENGTH = 40
 const SIGHT_INFO_MAX_LENGTH = 250
 
+// Const for faq input validation
 const FAQ_QUESTION_MAX_LENGTH = 100
 const FAQ_ANSWER_MAX_LENGTH = 250
 
+// Const for comment input validation
 const COMMENT_AUTHOR_MAX_LENGTH = 40
 const COMMENT_TOPIC_MAX_LENGTH = 40
 const COMMENT_TEXT_MAX_LENGTH = 40
 const COMMENT_RATING_MAX_NUMBER = 10
 
+// Username and password for login
 const CORRECT_ADMIN_USERNAME = "Andi"
 const CORRECT_ADMIN_PASSWORD = "123"
 
+// create 3 database tables
 db.run(`
 	CREATE TABLE IF NOT EXISTS sights   (
 		id INTEGER PRIMARY KEY,
@@ -63,12 +63,7 @@ db.run(`
 	)`
 )
 
-const app = express()
-
-app.engine('hbs', expressHandlebars.engine({
-	defaultLayout: 'main.hbs'
-}))
-
+// middlewares
 app.use(
 	express.static('public')
 )
@@ -81,12 +76,9 @@ app.use(
 	})
 )
 
-
 app.use(
 	express.static('node_modules/spectre.css/dist')
 )
-
-
 
 app.use(
 	express.urlencoded({
@@ -99,6 +91,105 @@ app.use(function(request, response, next){
 	response.locals.isLoggedIn = isLoggedIn
 	next()
 })
+
+
+// functions
+
+//detect einput errors for sights
+function getValidationErrorsForSight(name, city, country, info, requestFile){
+	const errorMessages = []
+	
+	if(name == ""){
+		errorMessages.push("Name can't be empty")
+	}else if(SIGHT_NAME_MAX_LENGTH < name.length){
+		errorMessages.push("Name must be shorter than "+SIGHT_NAME_MAX_LENGTH+" characters long")
+	}
+
+	if(city == ""){
+		errorMessages.push("City can't be empty")
+	}else if(SIGHT_CITY_MAX_LENGTH < city.length){
+		errorMessages.push("City must be shorter than "+SIGHT_CITY_MAX_LENGTH+" characters long")
+	}
+
+	if(country == ""){
+		errorMessages.push("Country can't be empty")
+	}else if(SIGHT_COUNTRY_MAX_LENGTH < country.length){
+		errorMessages.push("Country must be shorter than "+SIGHT_COUNTRY_MAX_LENGTH+" characters long")
+	}
+
+	if(info == ""){
+		errorMessages.push("Info of sight can't be empty")
+	}else if(SIGHT_INFO_MAX_LENGTH < info.length){
+		errorMessages.push("Info must be shorter than "+SIGHT_INFO_MAX_LENGTH+" characters long")
+	}
+
+// Inpdut validation for ulpoad an image
+	if(requestFile == undefined){		
+			} else{
+	if(requestFile.mimetype == "image/jpg" || requestFile.mimetype == "image/png"  || requestFile.mimetype == "image/jpeg"){
+		image = requestFile.buffer.toString('base64')
+	}else{
+		errorMessages.push("Image type must be .png, .jpg or .jpeg")		
+	}}
+
+	return errorMessages
+}
+
+//detect input errors for faqs
+function getValidationErrorsForFaq(question,answer){
+	const errorMessages = []
+	
+	if(question == ""){
+		errorMessages.push("Question can't be empty")
+	}else if(FAQ_QUESTION_MAX_LENGTH < question.length){
+		errorMessages.push("Question must be shorter than "+FAQ_QUESTION_MAX_LENGTH+" characters long")
+	}
+
+	if(answer == ""){
+		errorMessages.push("Answer can't be empty")
+	}else if(FAQ_ANSWER_MAX_LENGTH < answer.length){
+		errorMessages.push("Answer must be shorter than "+FAQ_ANSWER_MAX_LENGTH+" characters long")
+	}
+
+	return errorMessages
+}
+
+//detect input error for comments
+function getValidationErrorsForComment(author, topic, text, rating){
+	const errorMessages = []
+
+	if(author == ""){
+		errorMessages.push("Author can't be empty")
+	}else if(COMMENT_AUTHOR_MAX_LENGTH < author.length){
+		errorMessages.push("Author must be shorter than "+COMMENT_AUTHOR_MAX_LENGTH+" characters long")
+	}
+
+	if(topic == ""){
+		errorMessages.push("Topic can't be empty")
+	}else if(COMMENT_TOPIC_MAX_LENGTH < topic.length){
+		errorMessages.push("Topic must be shorter than "+COMMENT_TOPIC_MAX_LENGTH+" characters long")
+	}
+
+	if(text == ""){
+		errorMessages.push("Text can't be empty")
+	}else if(COMMENT_TEXT_MAX_LENGTH < topic.length){
+		errorMessages.push("Text must be shorter than "+COMMENT_TEXT_MAX_LENGTH+" characters long")
+	}
+
+	if(isNaN(rating)){
+		errorMessages.push("You did not enter a number for the rating")
+	}else if(rating == ""){
+		errorMessages.push("Rating can't be empty")
+	}else if(rating < 0){
+		errorMessages.push("Rating may not be negative")
+	}else if(10 < rating){
+		errorMessages.push("Rating may at most be 10")
+	}
+
+	return errorMessages
+}
+
+//get pages 
 
 app.get('/', function (request, response) {
 	response.render('start.hbs')
@@ -153,7 +244,8 @@ app.post('/login', function(request, response){
 			const model = {
 				errorMessages,
 				enteredUsername,
-				enteredPassword					}
+				enteredPassword,
+							}
 			response.render('login.hbs', model)
 
 
@@ -174,56 +266,38 @@ app.post('/login', function(request, response){
 
 
 
-function getValidationErrorsForSight(name, city, country, info, requestFile){
-	const errorMessages = []
-	
-	if(name == ""){
-		errorMessages.push("Name can't be empty")
-	}else if(SIGHT_NAME_MAX_LENGTH < name.length){
-		errorMessages.push("Name must be shorter than "+SIGHT_NAME_MAX_LENGTH+" characters long")
-	}
 
-	if(city == ""){
-		errorMessages.push("City can't be empty")
-	}else if(SIGHT_CITY_MAX_LENGTH < city.length){
-		errorMessages.push("City must be shorter than "+SIGHT_CITY_MAX_LENGTH+" characters long")
-	}
-
-	if(country == ""){
-		errorMessages.push("Country can't be empty")
-	}else if(SIGHT_COUNTRY_MAX_LENGTH < country.length){
-		errorMessages.push("Country must be shorter than "+SIGHT_COUNTRY_MAX_LENGTH+" characters long")
-	}
-
-	if(info == ""){
-		errorMessages.push("Info of sight can't be empty")
-	}else if(SIGHT_INFO_MAX_LENGTH < info.length){
-		errorMessages.push("Info must be shorter than "+SIGHT_INFO_MAX_LENGTH+" characters long")
-	}
-
-
-	if(requestFile == undefined ){
-		image = "placeholder"
-	} else{
-	if(requestFile.mimetype == "image/jpg" || requestFile.mimetype == "image/png"  || requestFile.mimetype == "image/jpeg"){
-		console.log('es geht')
-		 image = requestFile.buffer.toString('base64')
-	}else{
-		errorMessages.push("Image type must be .png, .jpg or .jpeg")	
-	
-	}}
-
-	return errorMessages
-}
 
 
 app.get('/sights', function (request, response) {
 	const query = `SELECT * FROM sights`
+	const errorMessages = []
 	db.all(query, function(error, sights){
-		const model = {
-			sights
+
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				sights,
+				operation: "get"
+			}
+
+			response.render('sights.hbs', model)
+		}else{
+			const model = {
+				errorMessages,
+				sights,
+				operation: "get"
+			}
+			response.render('sights.hbs', model)
 		}
-		response.render('sights.hbs', model)
+
+
+
+		
 	})	
 })
 
@@ -238,20 +312,19 @@ app.post("/sights/create", upload.single('image'), function(request, response){
 	const info = request.body.info
 	let image = ""
 
-	
-	
-	
-	
-	
-
-
 	const errorMessages = getValidationErrorsForSight(name, city, country, info, request.file)
 
 	if(!request.session.isLoggedIn){
 		errorMessages.push('You are not logged in')
 	}
+
+	if(request.file == undefined){
+		errorMessages.push("Image cant be empty")	
+			}
 	
 	if(errorMessages.length == 0){
+	
+		image = image = request.file.buffer.toString('base64')
 
 	const query = `INSERT INTO sights (name, city, country, info, image) VALUES (?, ?, ?, ?, ?)`
 	const values = [name, city, country, info, image]
@@ -267,7 +340,8 @@ app.post("/sights/create", upload.single('image'), function(request, response){
 				city,
 				country,
 				info,
-				image
+				image,
+				operation: "create"
 			}
 
 			response.render('create-sight.hbs', model)
@@ -286,7 +360,9 @@ app.post("/sights/create", upload.single('image'), function(request, response){
 			city,
 			country,
 			info,
-			image
+			image,
+			operation: "create"
+
 		}
 
 		
@@ -318,7 +394,8 @@ app.post("/sight/delete/:id", function(request, response){
 				errorMessages,
 				pagePath: "/sights",
 				pageName: "sights",
-				deleteErrorFor: "sight"
+				deleteErrorFor: "sight",
+				operation: "delete"
 			}
 
 			response.render('delete-error.hbs', model)
@@ -334,7 +411,9 @@ app.post("/sight/delete/:id", function(request, response){
 			errorMessages,
 			pagePath: "/sights",
 			pageName: "sights",
-			deleteErrorFor: "sight"
+			deleteErrorFor: "sight",
+			operation: "delete"
+
 		}
 		response.render('delete-error.hbs', model)
 
@@ -346,13 +425,35 @@ app.get("/sight/update/:id", function (request, response) {
 
 	const query = `SELECT * FROM sights WHERE id = ?`
 	const values = [id]
+
+	const errorMessages = []
 	db.get(query, values, function(error, sight){
-		const model = {
-			sight
+		
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				sight,
+				operation: "get"
+			}
+
+			response.render('update-sight.hbs', model)
+		}else{
+			const model = {
+				errorMessages,
+				sight,
+				operation: "get"
+
+			}
+			response.render('update-sight.hbs', model)
 		}
-		response.render('update-sight.hbs', model)
 	})	
 })
+
+
 
 app.post("/sight/update/:id", upload.single('image'), function(request, response){
 	const id = request.params.id
@@ -360,17 +461,53 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 	const newCity = request.body.city
 	const newCountry = request.body.country
 	const newInfo = request.body.info
-	const newImage = request.file.buffer.toString('base64')
+	let newImage = ""
 
-	const errorMessages = getValidationErrorsForSight(newName, newCity, newCountry, newInfo)
+	const errorMessages = getValidationErrorsForSight(newName, newCity, newCountry, newInfo, request.file)
 
 	if(!request.session.isLoggedIn){
 		errorMessages.push('You are not logged in')
 	}
 
 	if(errorMessages.length == 0){
-		
 
+		if(request.file == undefined){
+
+		const query = `UPDATE sights SET name = ?, city = ?, country = ?, info = ?  WHERE id = ?`
+		const values = [newName, newCity, newCountry, newInfo, id]
+		db.run(query, values, function(error){
+
+			if(error){
+				
+				
+				errorMessages.push("Internal server error")
+	
+				const model = {
+					errorMessages,
+					sight: {
+						id,
+						name: newName,
+						city: newCity,
+						country: newCountry,
+						info: newInfo
+						},
+						operation: "update"
+
+					}
+	
+				response.render('update-sight.hbs', model)
+			}else{
+				response.redirect("/sights")
+			}
+			
+		})
+
+
+		}else{
+
+		newImage = request.file.buffer.toString('base64')
+
+			
 		const query = `UPDATE sights SET name = ?, city = ?, country = ?, info = ?, image = ? WHERE id = ?`
 		const values = [newName, newCity, newCountry, newInfo, newImage, id]
 		db.run(query, values, function(error){
@@ -387,7 +524,10 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 						city: newCity,
 						country: newCountry,
 						info: newInfo
-						}
+
+						},
+						operation: "update"
+
 					}
 	
 				response.render('update-sight.hbs', model)
@@ -396,7 +536,14 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 			}
 			
 		})
+
+		}
+
+		
+
+
 	} else{
+
 		const model= {
 			errorMessages,
 			sight: {
@@ -404,8 +551,11 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 				name: newName,
 				city: newCity,
 				country: newCountry,
-				info: newInfo
-			} 
+				info: newInfo,
+				
+
+			} ,
+			operation: "update"
 
 		}
 		response.render('update-sight.hbs', model)
@@ -416,41 +566,65 @@ app.get("/sights/:id", function (request, response) {
 	const id = request.params.id
 	const query = `SELECT * FROM SIGHTS WHERE id = ?`
 	const values = [id]
+	const errorMessages = []
+
 	db.get(query, values, function(error, sight){
-		const model = {
-			sight
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				sight,
+				operation: "get"
+			}
+
+			response.render('sight.hbs', model)
+		}else{
+			const model = {
+				errorMessages,
+				sight,
+				operation: "get"
+
+			}
+			response.render('sight.hbs', model)
 		}
-		response.render('sight.hbs', model)
+
 	})
 })
 
 app.get('/faqs', function (request, response) {
 	const query = `SELECT * FROM faqs`
+	const errorMessages = []
+
 	db.all(query, function(error, faqs){
-		const model = {
-			faqs
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				faqs,
+				operation: "get"
+			}
+
+			response.render('faqs.hbs', model)
+		}else{
+			const model = {
+				errorMessages,
+				faqs,
+				operation: "get"
+
+			}
+			response.render('faqs.hbs', model)
 		}
-		response.render('faqs.hbs', model)
+
 	})	
 })
 
-function getValidationErrorsForFaq(question,answer){
-	const errorMessages = []
-	
-	if(question == ""){
-		errorMessages.push("Question can't be empty")
-	}else if(FAQ_QUESTION_MAX_LENGTH < question.length){
-		errorMessages.push("Question must be shorter than "+FAQ_QUESTION_MAX_LENGTH+" characters long")
-	}
 
-	if(answer == ""){
-		errorMessages.push("Answer can't be empty")
-	}else if(FAQ_ANSWER_MAX_LENGTH < answer.length){
-		errorMessages.push("Answer must be shorter than "+FAQ_ANSWER_MAX_LENGTH+" characters long")
-	}
-
-	return errorMessages
-}
 
 app.get("/faq/create", function(request, response){
 	response.render("create-faq.hbs")
@@ -479,7 +653,8 @@ app.post("/faq/create", function(request, response){
 				const model = {
 					errorMessages,
 					question,
-					answer
+					answer,
+					operation: "create"
 				}
 	
 				response.render('create-faq.hbs', model)
@@ -491,7 +666,9 @@ app.post("/faq/create", function(request, response){
 		const model = {
 			errorMessages,
 			question,
-			answer
+			answer,
+			operation: "create"
+
 		}
 
 		
@@ -522,7 +699,8 @@ app.post("/faq/delete/:id", function(request, response){
 				errorMessages,
 				pagePath: "/faqs",
 				pageName: "faqs",
-				deleteErrorFor: "faq"
+				deleteErrorFor: "faq",
+				operation: "delete"
 			}
 
 			response.render('delete-error.hbs', model)
@@ -538,7 +716,9 @@ app.post("/faq/delete/:id", function(request, response){
 			errorMessages,
 			pagePath: "/faqs",
 			pageName: "faqs",
-			deleteErrorFor: "faq"
+			deleteErrorFor: "faq",
+			operation: "delete"
+
 		}
 		response.render('delete-error.hbs', model)
 
@@ -551,11 +731,31 @@ app.get("/faq/update/:id", function (request, response) {
 
 	const query = `SELECT * FROM faqs WHERE id = ?`
 	const values = [id]
+	const errorMessages = []
+
 	db.get(query, values, function(error, faq){
-		const model = {
-			faq
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				faq,
+				operation: "get"
+			}
+
+			response.render('update-faq.hbs', model)
+		}else{
+			const model = {
+				errorMessages,
+				faq,
+				operation: "get"
+
+			}
+			response.render('update-faq.hbs', model)
 		}
-		response.render('update-faq.hbs', model)
+
 	})	
 })
 
@@ -586,7 +786,8 @@ app.post("/faq/update/:id", function(request, response){
 						id,
 						question: newQuestion,
 						answer: newAnswer,
-						}
+						},
+						operation: "update"
 					}
 
 				response.render('update-faq.hbs', model)
@@ -602,54 +803,43 @@ app.post("/faq/update/:id", function(request, response){
 						id,
 						question: newQuestion,
 						answer: newAnswer,
-						}
+
+						},
+						operation: "update"
 
 		}
 		response.render('update-faq.hbs', model)
 	}
 })
 
-function getValidationErrorsForComment(author, topic, text, rating){
-	const errorMessages = []
-
-	if(author == ""){
-		errorMessages.push("Author can't be empty")
-	}else if(COMMENT_AUTHOR_MAX_LENGTH < author.length){
-		errorMessages.push("Author must be shorter than "+COMMENT_AUTHOR_MAX_LENGTH+" characters long")
-	}
-
-	if(topic == ""){
-		errorMessages.push("Topic can't be empty")
-	}else if(COMMENT_TOPIC_MAX_LENGTH < topic.length){
-		errorMessages.push("Topic must be shorter than "+COMMENT_TOPIC_MAX_LENGTH+" characters long")
-	}
-
-	if(text == ""){
-		errorMessages.push("Text can't be empty")
-	}else if(COMMENT_TEXT_MAX_LENGTH < topic.length){
-		errorMessages.push("Text must be shorter than "+COMMENT_TEXT_MAX_LENGTH+" characters long")
-	}
-
-	if(isNaN(rating)){
-		errorMessages.push("You did not enter a number for the rating")
-	}else if(rating == ""){
-		errorMessages.push("Rating can't be empty")
-	}else if(rating < 0){
-		errorMessages.push("Rating may not be negative")
-	}else if(10 < rating){
-		errorMessages.push("Rating may at most be 10")
-	}
-
-	return errorMessages
-}
 
 app.get('/comments', function (request, response) {
 	const query = `SELECT * FROM comments`
+	const errorMessages = []
+
 	db.all(query, function(error, comments){
-		const model = {
-			comments
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				comments,
+				operation: "get"
+			}
+
+			response.render('comments.hbs', model)
+		}else{
+			const model = {
+				errorMessages,
+				comments,
+				operation: "get"
+
+			}
+			response.render('comments.hbs', model)
 		}
-		response.render('comments.hbs', model)
+
 	})
 })
 
@@ -684,7 +874,8 @@ app.post("/comments/create", function(request, response){
 					author,
 					topic,
 					text,
-					rating
+					rating,
+					operation: "create"
 				}
 	
 				response.render('create-comment.hbs', model)
@@ -699,7 +890,8 @@ app.post("/comments/create", function(request, response){
 			author,
 			topic,
 			text,
-			rating
+			rating,
+			operation: "create"
 		}
 
 		response.render('create-comment.hbs', model)
@@ -714,11 +906,31 @@ app.get("/comment/update/:id", function (request, response) {
 
 	const query = `SELECT * FROM comments WHERE id = ?`
 	const values = [id]
+	const errorMessages = []
+
 	db.get(query, values, function(error, comment){
-		const model = {
-			comment
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				comment,
+				operation: "get"
+			}
+
+			response.render('update-comment.hbs', model)
+		}else{
+			const model = {
+				errorMessages,
+				comment,
+				operation: "get"
+
+			}
+			response.render('update-comment.hbs', model)
 		}
-		response.render('update-comment.hbs', model)
+
 	})	
 })
 
@@ -753,7 +965,9 @@ app.post("/comment/update/:id", function(request, response){
 						topic: newTopic,
 						text: newText,
 						rating: newRating
-						}
+						
+						},
+						operation: "update"
 					}
 
 				response.render('update-comment.hbs', model)
@@ -770,7 +984,10 @@ app.post("/comment/update/:id", function(request, response){
 				topic: newTopic,
 				text: newText,
 				rating: newRating
-				}
+				
+
+				},
+				operation: "update"
 
 		}
 		response.render('update-comment.hbs', model)
@@ -801,7 +1018,8 @@ app.post("/comment/delete/:id", function(request, response){
 				errorMessages,
 				pagePath: "/comments",
 				pageName: "comments",
-				deleteErrorFor: "comment"
+				deleteErrorFor: "comment",
+				operation: "delete"
 			}
 
 			response.render('delete-error.hbs', model)
@@ -817,7 +1035,9 @@ app.post("/comment/delete/:id", function(request, response){
 			errorMessages,
 			pagePath: "/comments",
 			pageName: "comments",
-			deleteErrorFor: "comment"
+			deleteErrorFor: "comment",
+			operation: "delete"
+
 		}
 		response.render('delete-error.hbs', model)
 

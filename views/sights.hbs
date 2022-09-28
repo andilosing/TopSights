@@ -3,6 +3,17 @@
 								<input type="submit" value="Create new sight">	
 							</form>
 
+{{#if errorMessages.length}}
+<div class="bg-primary">
+	<p>Couldn't {{operation}} the sights because:</p>
+	<ul>
+		{{#each errorMessages}}
+			<li>{{this}}</li>
+		{{/each}}
+	</ul>
+	</div>
+{{/if}}
+
 
 {{#if sights.length}}
 	
@@ -12,15 +23,15 @@
 		
 			<div>
 				<div class="card border bg-gray">
-					<div class="card-image margin">
-   					 <img alt="Embedded Image" src="data:image/png;base64, {{image}}"  height="24%" width="60%" class="img-responsive p-centered">
- 					 </div>
+					
 					<div class="card-header">
 						<div class="card-title h5 bg-primary text-center"><a class="text-secondary" href="/sights/{{id}}">{{name}}</a></div>
 						<div class="card-subtitle text-gray">{{city}}, {{country}}</div>
 					</div>
 					<div class="card-body">
-						<p>The sight {{name}} is at location {{city}}, {{country}}.</p>
+						<div class="card-image margin">
+   					 <img alt="{{sight.name}},{{sight.name}}" src="data:image/png;base64, {{image}}"  height="24%" width="60%" class="img-responsive p-centered">
+ 					 </div>
 						<p class="bg-secondary text-center">For more information click on the header!</p>
 					</div>
 				</div>

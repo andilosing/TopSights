@@ -6,7 +6,7 @@
 
 							{{#if errorMessages.length}}
 							<div class="bg-primary">
-	<p>Couldn't delete the FAQ because:</p>
+	<p>Couldn't {{operation}} the FAQ because:</p>
 	<ul>
 		{{#each errorMessages}}
 			<li>{{this}}</li>
@@ -29,16 +29,17 @@
 						<input type="radio" id="{{id}}" name="accordion-radio" hidden>
 						<label class="accordion-header faq-header" for="{{id}}">
 							<i class="icon icon-arrow-right mr-{{id}}"></i>
-							#{{id}}: {{question}}
+							Question: {{question}}
 						</label>
 						<div class="accordion-body faq-answer">
-							{{answer}}
-							<form action="/faq/delete/{{id}}" method="POST">	
+							 {{answer}}
+								<form action="/faq/delete/{{id}}" method="POST">	
 								<input type="submit" value="Delete">	
 							</form>
 							<form action="/faq/update/{{id}}" method="GET">	
 								<input type="submit" value="Update">	
 							</form>
+
 
 							
 

@@ -2,7 +2,7 @@
 
 {{#if errorMessages.length}}
 <div class="bg-primary">
-	<p>Couldn't delete the {{deleteErrorFor}} because:</p>
+	<p>Couldn't {{operation}} the {{deleteErrorFor}} because:</p>
 	<ul>
 		{{#each errorMessages}}
 			<li>{{this}}</li>

@@ -2,7 +2,7 @@
 
 	{{#if errorMessages.length}}
 	<div class="bg-primary">
-	<p>Couldn't delete the FAQ because:</p>
+	<p>Couldn't {{operation}} the sight because:</p>
 	<ul>
 		{{#each errorMessages}}
 			<li>{{this}}</li>
@@ -15,7 +15,7 @@
 
 	<h1>{{sight.name}}</h1>
 	<h6>Location: {{sight.city}}, {{sight.country}}</h6>
-	<img alt="Embedded Image" src="data:image/png;base64, {{sight.image}}" height="24%" width="60%" class="img-responsive p-centered">
+	<img alt="{{sight.name}},{{sight.name}}" src="data:image/png;base64, {{sight.image}}" height="24%" width="60%" class="img-responsive p-centered">
 	<p>{{sight.info}}</p>
 	<form action="/sight/delete/{{sight.id}}" method="POST" >	
 		<input type="submit" value="Delete">	

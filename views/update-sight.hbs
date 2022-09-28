@@ -2,7 +2,7 @@
 
 {{#if errorMessages.length}}
 <div class="bg-primary">
-	<p >Couldn't update the sight because:</p>
+	<p >Couldn't {{operation}} the sight because:</p>
 	<ul>
 		{{#each errorMessages}}
 			<li>{{this}}</li>
@@ -26,7 +26,9 @@
 			Info: <textarea  type="text" name="info"  style="height:200px">{{sight.info}}</textarea>
 		</div>
 		<div>
-			Upload image: <Input  type ="file" name="image" > 
+   				Current image: 		 <img alt="{{sight.name}},{{sight.name}}" src="data:image/png;base64, {{sight.image}}"  height="24%" width="60%" class="img-responsive p-centered">
+		
+			Upload new image: <Input  type ="file" name="image" > 
 		</div>
 			<input type="submit" value="Update">
 	</div>
