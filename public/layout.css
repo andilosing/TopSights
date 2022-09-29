@@ -3,8 +3,6 @@ body {
 	margin: 15px;
 }
 
-
-
 .border{
 	border-style: solid;
 		border-color: black;
@@ -147,26 +145,10 @@ input[type=text], input[type=password], select, textarea {
 }
 
   .grid-container {
-	margin: 10px;
-	padding: 10px;
-	display: grid;
 	grid-template-columns: repeat(1, 5fr);
-	grid-template-rows: repeat(1, 4fr);
-	grid-column-gap: 10px;
-	grid-row-gap: 10px;
-	grid-auto-flow: row;
 		}
 
 	.grid-container-faq {
 		margin: 10px 10px;
-		padding: 10px;
-		display: grid;
-		grid-template-columns: repeat(1, 5fr);
-		grid-template-rows: repeat(1, 4fr);
-		grid-column-gap: 10px;
-		grid-row-gap: 10px;
-		grid-auto-flow: row;
 				}
-
- 
  }

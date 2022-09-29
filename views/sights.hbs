@@ -16,7 +16,12 @@
 
 
 {{#if sights.length}}
-	
+
+	<form action="/sights/search" method="GET">	
+								<input type="submit" value="Search sights">	
+							</form>
+
+
 	<div class="grid-container">
  
 		{{#each sights}}
@@ -38,8 +43,19 @@
 			</div>
 
 		{{/each}}
+</div>
 
-	</div>
+		<ul class="pagination">
+			{{#each sights}} 
+  <li class="page-item">
+    <a href="/sights/{{id}}">{{id}}</a>
+  </li>
+	{{/each}}
+</ul>
+
+	
+
+	
 
 {{/if}}
   

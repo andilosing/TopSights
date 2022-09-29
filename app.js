@@ -34,7 +34,7 @@ const COMMENT_RATING_MAX_NUMBER = 10
 const CORRECT_ADMIN_USERNAME = "Andi"
 const CORRECT_ADMIN_PASSWORD = "123"
 
-// create 3 database tables
+// create  database tables
 db.run(`
 	CREATE TABLE IF NOT EXISTS sights   (
 		id INTEGER PRIMARY KEY,
@@ -64,6 +64,7 @@ db.run(`
 )
 
 // middlewares
+
 app.use(
 	express.static('public')
 )
@@ -95,7 +96,7 @@ app.use(function(request, response, next){
 
 // functions
 
-//detect einput errors for sights
+//detect input errors for sights
 function getValidationErrorsForSight(name, city, country, info, requestFile){
 	const errorMessages = []
 	
@@ -123,7 +124,7 @@ function getValidationErrorsForSight(name, city, country, info, requestFile){
 		errorMessages.push("Info must be shorter than "+SIGHT_INFO_MAX_LENGTH+" characters long")
 	}
 
-// Inpdut validation for ulpoad an image
+// Input validation for ulpoad an image
 	if(requestFile == undefined){		
 			} else{
 	if(requestFile.mimetype == "image/jpg" || requestFile.mimetype == "image/png"  || requestFile.mimetype == "image/jpeg"){
@@ -214,6 +215,172 @@ app.get('/logout', function (request, response) {
 app.get('/delete/error', function (request, response) {
 	response.render('delete-error.hbs')
 })
+
+
+app.get('/sights/search', function (request, response) {
+	response.render('search-sights.hbs')
+})
+
+app.post("/sights/search", function(request, response){	
+	let name = request.body.name
+	let city = request.body.city
+	let country = request.body.country
+	
+	let query = ""
+	const values = []
+	const errorMessages= []
+	if(name =="" && city == "" && country == ""){
+		query =`SELECT * FROM sights`
+}else if(name ==""  && city == "" && country != ""){
+	 query = `SELECT * FROM sights WHERE country = ?`
+	 values.push(country)
+	}else	if(name != "" && city ==""  && country == ""){
+		 query = `SELECT * FROM sights WHERE name = ?`
+		values.push(name)
+	}else	if(name =="" && city != "" && country == ""){
+		 query = `SELECT * FROM sights WHERE city = ?`
+		values.push(city)
+	}else	if(name =="" && city != "" && country != "" ){
+		query = `SELECT * FROM sights WHERE city = ? AND country = ?`
+		values.push(city)
+		values.push(country)
+	 }else if(name != "" && city == "" && country != ""){
+		query = `SELECT * FROM sights WHERE name = ? AND country = ?`
+		values.push(name)
+		values.push(country)
+	 }else if(name != "" && city !="" && country ==""  ){
+		query = `SELECT * FROM sights WHERE name = ? AND city = ?`
+		values.push(name)
+		values.push(city)
+	 }else if(name !="" && city != "" && country != ""){
+		query = `SELECT * FROM sights WHERE name = ? AND city = ? AND country = ?`
+		values.push(name)
+		values.push(city)
+		values.push(country)
+ } 
+	 
+	
+
+	db.all(query, values, function(error, sights){
+
+		if(error){
+			errorMessages.push("Internal Server Error")
+			const model = {
+				sights,
+				name,
+				city,
+				country,
+				errorMessages,
+				performedSearch: false
+			}
+			response.render('search-sights.hbs', model)
+
+		}else{
+			const model = {
+				sights,
+				name,
+				city,
+				country,
+				errorMessages, 
+				performedSearch: true
+	
+			}
+	
+			
+			response.render('search-sights.hbs', model)
+
+		}
+
+		
+	
+		
+	})
+
+})
+
+app.post("/sight/delete/:id", function(request, response){
+	const id = request.params.id
+	const query = `DELETE FROM sights WHERE id = ?`
+	const values = [id]
+
+	const errorMessages = []
+
+	if(!request.session.isLoggedIn){
+		errorMessages.push('You are not logged in')
+	}
+
+	if(errorMessages.length == 0){
+	
+	db.run(query, values, function(error){
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				pagePath: "/sights",
+				pageName: "sights",
+				deleteErrorFor: "sight",
+				operation: "delete"
+			}
+
+			response.render('delete-error.hbs', model)
+		}else{
+			response.redirect("/sights")
+		}
+
+	})	
+
+	}else{
+
+		const model= {
+			errorMessages,
+			pagePath: "/sights",
+			pageName: "sights",
+			deleteErrorFor: "sight",
+			operation: "delete"
+
+		}
+		response.render('delete-error.hbs', model)
+
+	}
+})
+
+app.get("/sight/update/:id", function (request, response) {
+	const id = request.params.id
+
+	const query = `SELECT * FROM sights WHERE id = ?`
+	const values = [id]
+
+	const errorMessages = []
+	db.get(query, values, function(error, sight){
+		
+
+		if(error){
+				
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				sight,
+				operation: "get"
+			}
+
+			response.render('update-sight.hbs', model)
+		}else{
+			const model = {
+				errorMessages,
+				sight,
+				operation: "get"
+
+			}
+			response.render('update-sight.hbs', model)
+		}
+	})	
+})
+
+
 
 app.post('/logout', function (request, response) {
 	const errorMessages = []
@@ -320,7 +487,7 @@ app.post("/sights/create", upload.single('image'), function(request, response){
 
 	if(request.file == undefined){
 		errorMessages.push("Image cant be empty")	
-			}
+	}
 	
 	if(errorMessages.length == 0){
 	
@@ -461,7 +628,6 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 	const newCity = request.body.city
 	const newCountry = request.body.country
 	const newInfo = request.body.info
-	let newImage = ""
 
 	const errorMessages = getValidationErrorsForSight(newName, newCity, newCountry, newInfo, request.file)
 
@@ -489,7 +655,7 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 						name: newName,
 						city: newCity,
 						country: newCountry,
-						info: newInfo
+						info: newInfo,
 						},
 						operation: "update"
 
@@ -523,7 +689,7 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 						name: newName,
 						city: newCity,
 						country: newCountry,
-						info: newInfo
+						info: newInfo,
 
 						},
 						operation: "update"
@@ -567,6 +733,9 @@ app.get("/sights/:id", function (request, response) {
 	const query = `SELECT * FROM SIGHTS WHERE id = ?`
 	const values = [id]
 	const errorMessages = []
+
+
+
 
 	db.get(query, values, function(error, sight){
 
