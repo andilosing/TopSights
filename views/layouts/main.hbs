@@ -29,10 +29,10 @@
 				<a href="/" class="navbar-brand mr-2 ">TopSights</a>
 			</section>
 			<section class="navbar-section">
-				{{#unless isLoggedIn}}
+				{{#unless session.isLoggedIn}}
 				<a href="/login" class="btn btn-link">Login</a>
 				{{/unless}}
-				{{#if isLoggedIn}}
+				{{#if session.isLoggedIn}}
 				<a href="/logout" class="btn btn-link">Logout</a>
 				{{/if}}
 			</section>

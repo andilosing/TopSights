@@ -1,7 +1,9 @@
 <h1 class="text-center">Sights</h1>
-<form action="/sights/create" method="GET">	
+				{{#if session.isLoggedIn}}
+							<form action="/sights/create" method="GET">	
 								<input type="submit" value="Create new sight">	
 							</form>
+							{{/if}}
 
 {{#if errorMessages.length}}
 <div class="bg-primary">
@@ -45,12 +47,18 @@
 		{{/each}}
 </div>
 
-		<ul class="pagination">
-			{{#each sights}} 
-  <li class="page-item">
-    <a href="/sights/{{id}}">{{id}}</a>
+		<ul class="pagination ">  
+  {{#if pagination.prevPage}}<li class="page-item ">
+    <a href="/sights?page={{pagination.prevPage}}">{{pagination.prevPage}}</a>
   </li>
-	{{/each}}
+	{{/if}}
+  <li class="page-item">
+    <a href="/sights?page={{pagination.currentPage}}">{{pagination.currentPage}}</a>
+  </li>
+	{{#if pagination.nextPage}}<li class="page-item ">
+    <a href="/sights?page={{pagination.nextPage}}">{{pagination.nextPage}}</a>
+  </li>
+	{{/if}}
 </ul>
 
 	
@@ -58,4 +66,39 @@
 	
 
 {{/if}}
+
+
+
+
+<!-- <ul class="pagination">
+  <li class="page-item disabled">
+    <a href="#" tabindex="-1">Previous</a>
+  </li>
+  <li class="page-item active">
+    <a href="#">1</a>
+  </li>
+  <li class="page-item">
+    <a href="#">2</a>
+  </li>
+  <li class="page-item">
+    <a href="#">3</a>
+  </li>
+  <li class="page-item">
+    <span>...</span>
+  </li>
+  <li class="page-item">
+    <a href="#">12</a>
+  </li>
+  <li class="page-item">
+    <a href="#">Next</a>
+  </li>
+</ul>
+
+?page=2
+
+SELECT column1, column2, columnN 
+FROM table_name
+LIMIT [no of rows] OFFSET [row num]
+
+-->
   

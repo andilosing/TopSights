@@ -65,6 +65,36 @@ db.run(`
 
 // middlewares
 
+// pagination
+function paginate(currentPage, pageLimit, totalItems) {
+
+	const totalPages = Math.ceil(totalItems / pageLimit)
+	let prevPage, nextPage
+
+	currentPage = parseInt(currentPage)
+	if(currentPage <= 1) {
+		currentPage = 1
+		nextPage = totalPages > currentPage ? currentPage +1 : false
+		prevPage = false
+	} else if( currentPage >= totalPages){
+		currentPage = totalPages
+		prevPage = currentPage - 1
+		nextPage = false
+	} else {
+		prevPage = currentPage - 1 
+		nextPage = currentPage + 1
+	}
+
+	return{
+		prevPage: prevPage, 
+		currentPage: currentPage, 
+		nextPage: nextPage,
+		offset: (currentPage - 1) * pageLimit,
+		limit: pageLimit
+	}
+
+}
+
 app.use(
 	express.static('public')
 )
@@ -89,7 +119,7 @@ app.use(
 
 app.use(function(request, response, next){
 	const isLoggedIn = request.session.isLoggedIn
-	response.locals.isLoggedIn = isLoggedIn
+	response.locals.session = request.session
 	next()
 })
 
@@ -437,35 +467,54 @@ app.post('/login', function(request, response){
 
 
 app.get('/sights', function (request, response) {
-	const query = `SELECT * FROM sights`
+	const {page} = request.query
+	const pageLimit = 4
+
+	const currentPage = !isNaN(page) ? page : 1
+
+	const totalItemsQuery = 'SELECT COUNT (*) AS count FROM sights'
+	
 	const errorMessages = []
-	db.all(query, function(error, sights){
 
-
-		if(error){
-				
+	db.get(totalItemsQuery, [], function (error, totalItems) {
+		if (error) {
 			errorMessages.push("Internal server error")
-
-			const model = {
-				errorMessages,
-				sights,
-				operation: "get"
-			}
-
-			response.render('sights.hbs', model)
-		}else{
-			const model = {
-				errorMessages,
-				sights,
-				operation: "get"
-			}
-			response.render('sights.hbs', model)
-		}
-
-
-
 		
-	})	
+			const model = {
+				errorMessages,
+				sights,
+				operation: "get"
+			}
+		} else {
+			const pagination = paginate(currentPage, pageLimit,  totalItems.count)
+			const query = `SELECT * FROM sights LIMIT ? OFFSET ?`
+			const values = [pagination.limit, pagination.offset]
+			db.all(query, values, function (error, sights) {
+				if(error){
+					errorMessages.push("Internal server error")
+		
+					const model = {
+						errorMessages,
+						sights,
+						operation: "get"
+					}
+		
+					response.render('sights.hbs', model)
+				} else {
+					const model = {
+						errorMessages,
+						pagination,
+						sights,
+						operation: "get"
+					}
+					response.render('sights.hbs', model)
+				}
+			})
+		}
+	})
+
+
+	
 })
 
 app.get("/sights/create", function(request, response){
