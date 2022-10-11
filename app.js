@@ -1,9 +1,12 @@
 const express = require('express')
 const expressHandlebars = require('express-handlebars')
-const sqlite3 = require('sqlite3')
 const expressSession = require('express-session')
 
-const db = new sqlite3.Database("topSights-database.db")
+//const sightsRouter = require('./routers/sights-router')
+
+const db = require('./db.js')
+
+
 const multer = require('multer')
 const upload = multer({
 	storage:multer.memoryStorage(),
@@ -34,34 +37,7 @@ const COMMENT_RATING_MAX_NUMBER = 10
 const CORRECT_ADMIN_USERNAME = "Andi"
 const CORRECT_ADMIN_PASSWORD = "123"
 
-// create  database tables
-db.run(`
-	CREATE TABLE IF NOT EXISTS sights   (
-		id INTEGER PRIMARY KEY,
-		name TEXT,
-		city TEXT,
-		country TEXT,
-		info TEXT,
-		image LONGTEXT )`
-)
 
-db.run(`
-	CREATE TABLE IF NOT EXISTS comments   (
-		id INTEGER PRIMARY KEY,
-		author TEXT,
-		topic TEXT,
-		text TEXT,
-		rating INTEGER 
-	)`
-)
-
-db.run(`
-	CREATE TABLE IF NOT EXISTS faqs   (
-		id INTEGER PRIMARY KEY,
-		question TEXT,
-		answer TEXT 
-	)`
-)
 
 // middlewares
 
@@ -123,6 +99,9 @@ app.use(function(request, response, next){
 	next()
 })
 
+
+
+//app.use("/sights", sightsRouter)
 
 // functions
 
@@ -256,42 +235,11 @@ app.post("/sights/search", function(request, response){
 	let city = request.body.city
 	let country = request.body.country
 	
-	let query = ""
-	const values = []
-	const errorMessages= []
-	if(name =="" && city == "" && country == ""){
-		query =`SELECT * FROM sights`
-}else if(name ==""  && city == "" && country != ""){
-	 query = `SELECT * FROM sights WHERE country = ?`
-	 values.push(country)
-	}else	if(name != "" && city ==""  && country == ""){
-		 query = `SELECT * FROM sights WHERE name = ?`
-		values.push(name)
-	}else	if(name =="" && city != "" && country == ""){
-		 query = `SELECT * FROM sights WHERE city = ?`
-		values.push(city)
-	}else	if(name =="" && city != "" && country != "" ){
-		query = `SELECT * FROM sights WHERE city = ? AND country = ?`
-		values.push(city)
-		values.push(country)
-	 }else if(name != "" && city == "" && country != ""){
-		query = `SELECT * FROM sights WHERE name = ? AND country = ?`
-		values.push(name)
-		values.push(country)
-	 }else if(name != "" && city !="" && country ==""  ){
-		query = `SELECT * FROM sights WHERE name = ? AND city = ?`
-		values.push(name)
-		values.push(city)
-	 }else if(name !="" && city != "" && country != ""){
-		query = `SELECT * FROM sights WHERE name = ? AND city = ? AND country = ?`
-		values.push(name)
-		values.push(city)
-		values.push(country)
- } 
-	 
+
+	const errorMessages = []
 	
 
-	db.all(query, values, function(error, sights){
+	db.getSightsByFiltering(name, city, country, function(error, sights){
 
 		if(error){
 			errorMessages.push("Internal Server Error")
@@ -330,8 +278,7 @@ app.post("/sights/search", function(request, response){
 
 app.post("/sight/delete/:id", function(request, response){
 	const id = request.params.id
-	const query = `DELETE FROM sights WHERE id = ?`
-	const values = [id]
+	
 
 	const errorMessages = []
 
@@ -341,7 +288,7 @@ app.post("/sight/delete/:id", function(request, response){
 
 	if(errorMessages.length == 0){
 	
-	db.run(query, values, function(error){
+	db.deleteSightById(id, function(error){
 
 		if(error){
 				
@@ -380,11 +327,10 @@ app.post("/sight/delete/:id", function(request, response){
 app.get("/sight/update/:id", function (request, response) {
 	const id = request.params.id
 
-	const query = `SELECT * FROM sights WHERE id = ?`
-	const values = [id]
+	
 
 	const errorMessages = []
-	db.get(query, values, function(error, sight){
+	db.getSightById(id, function(error, sight){
 		
 
 		if(error){
@@ -462,21 +408,15 @@ app.post('/login', function(request, response){
 })
 
 
-
-
-
-
 app.get('/sights', function (request, response) {
 	const {page} = request.query
 	const pageLimit = 4
 
-	const currentPage = !isNaN(page) ? page : 1
-
-	const totalItemsQuery = 'SELECT COUNT (*) AS count FROM sights'
+	const currentPage = !isNaN(page) ? page : 1	
 	
 	const errorMessages = []
 
-	db.get(totalItemsQuery, [], function (error, totalItems) {
+	db.getTotalItems(function(error, totalItems){
 		if (error) {
 			errorMessages.push("Internal server error")
 		
@@ -487,9 +427,7 @@ app.get('/sights', function (request, response) {
 			}
 		} else {
 			const pagination = paginate(currentPage, pageLimit,  totalItems.count)
-			const query = `SELECT * FROM sights LIMIT ? OFFSET ?`
-			const values = [pagination.limit, pagination.offset]
-			db.all(query, values, function (error, sights) {
+			db.getAllSights(pagination.limit, pagination.offset, function(error, sights){
 				if(error){
 					errorMessages.push("Internal server error")
 		
@@ -510,12 +448,16 @@ app.get('/sights', function (request, response) {
 					response.render('sights.hbs', model)
 				}
 			})
+			 
 		}
 	})
+})
+	
+		
 
 
 	
-})
+
 
 app.get("/sights/create", function(request, response){
 	response.render("create-sight.hbs")
@@ -540,11 +482,10 @@ app.post("/sights/create", upload.single('image'), function(request, response){
 	
 	if(errorMessages.length == 0){
 	
-		image = image = request.file.buffer.toString('base64')
+		 image = request.file.buffer.toString('base64')
 
-	const query = `INSERT INTO sights (name, city, country, info, image) VALUES (?, ?, ?, ?, ?)`
-	const values = [name, city, country, info, image]
-	db.run(query, values, function(error){
+	
+	db.createSight(name, city, country, info, image, function(error){
 
 		if(error){
 				
@@ -589,8 +530,7 @@ app.post("/sights/create", upload.single('image'), function(request, response){
 
 app.post("/sight/delete/:id", function(request, response){
 	const id = request.params.id
-	const query = `DELETE FROM sights WHERE id = ?`
-	const values = [id]
+	
 
 	const errorMessages = []
 
@@ -600,7 +540,7 @@ app.post("/sight/delete/:id", function(request, response){
 
 	if(errorMessages.length == 0){
 	
-	db.run(query, values, function(error){
+	db.deleteSightById(id, function(error){
 
 		if(error){
 				
@@ -639,13 +579,10 @@ app.post("/sight/delete/:id", function(request, response){
 app.get("/sight/update/:id", function (request, response) {
 	const id = request.params.id
 
-	const query = `SELECT * FROM sights WHERE id = ?`
-	const values = [id]
+	
 
 	const errorMessages = []
-	db.get(query, values, function(error, sight){
-		
-
+	db.getSightById(id,  function(error, sight){
 		if(error){
 				
 			errorMessages.push("Internal server error")
@@ -666,7 +603,8 @@ app.get("/sight/update/:id", function (request, response) {
 			}
 			response.render('update-sight.hbs', model)
 		}
-	})	
+	})
+		
 })
 
 
@@ -688,9 +626,8 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 
 		if(request.file == undefined){
 
-		const query = `UPDATE sights SET name = ?, city = ?, country = ?, info = ?  WHERE id = ?`
-		const values = [newName, newCity, newCountry, newInfo, id]
-		db.run(query, values, function(error){
+		
+		db.updateSightByIdWithoutNewImage(newName, newCity, newCountry, newInfo, id, function(error){
 
 			if(error){
 				
@@ -721,11 +658,7 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 		}else{
 
 		newImage = request.file.buffer.toString('base64')
-
-			
-		const query = `UPDATE sights SET name = ?, city = ?, country = ?, info = ?, image = ? WHERE id = ?`
-		const values = [newName, newCity, newCountry, newInfo, newImage, id]
-		db.run(query, values, function(error){
+		db.updateSightByIdWithNewImage(newName, newCity, newCountry, newInfo, newImage, id, function(error){
 
 			if(error){
 				
@@ -779,44 +712,37 @@ app.post("/sight/update/:id", upload.single('image'), function(request, response
 
 app.get("/sights/:id", function (request, response) {
 	const id = request.params.id
-	const query = `SELECT * FROM SIGHTS WHERE id = ?`
-	const values = [id]
+	
 	const errorMessages = []
 
-
-
-
-	db.get(query, values, function(error, sight){
-
-		if(error){
+db.getSightById(id,  function(error, sight){
+	if(error){
 				
-			errorMessages.push("Internal server error")
+		errorMessages.push("Internal server error")
 
-			const model = {
-				errorMessages,
-				sight,
-				operation: "get"
-			}
-
-			response.render('sight.hbs', model)
-		}else{
-			const model = {
-				errorMessages,
-				sight,
-				operation: "get"
-
-			}
-			response.render('sight.hbs', model)
+		const model = {
+			errorMessages,
+			sight,
+			operation: "get"
 		}
 
-	})
+		response.render('sight.hbs', model)
+	}else{
+		const model = {
+			errorMessages,
+			sight,
+			operation: "get"
+
+		}
+		response.render('sight.hbs', model)
+	}
+} )
 })
 
 app.get('/faqs', function (request, response) {
-	const query = `SELECT * FROM faqs`
 	const errorMessages = []
 
-	db.all(query, function(error, faqs){
+	db.getAllFaqs(function(error, faqs){
 
 		if(error){
 				
@@ -860,9 +786,8 @@ app.post("/faq/create", function(request, response){
 
 	if(errorMessages.length == 0){
 
-		const query = `INSERT INTO faqs (question, answer) VALUES (?, ?)`
-		const values = [question, answer,]
-		db.run(query, values, function(error){
+		
+		db.createFaq(question, answer, function(error){
 
 			if(error){
 				
@@ -896,8 +821,6 @@ app.post("/faq/create", function(request, response){
 
 app.post("/faq/delete/:id", function(request, response){
 	const id = request.params.id
-	const query = `DELETE FROM faqs WHERE id = ?`
-	const values = [id]
 
 	const errorMessages = []
 
@@ -907,7 +830,7 @@ app.post("/faq/delete/:id", function(request, response){
 
 	if(errorMessages.length == 0){
 	
-	db.run(query, values, function(error){
+	db.deleteFaqById(id, function(error){
 
 		if(error){
 				
@@ -947,11 +870,10 @@ app.post("/faq/delete/:id", function(request, response){
 app.get("/faq/update/:id", function (request, response) {
 	const id = request.params.id
 
-	const query = `SELECT * FROM faqs WHERE id = ?`
-	const values = [id]
+	
 	const errorMessages = []
 
-	db.get(query, values, function(error, faq){
+	db.getFaqById(id, function(error, faq){
 
 		if(error){
 				
@@ -990,9 +912,8 @@ app.post("/faq/update/:id", function(request, response){
 
 	if(errorMessages.length == 0){
 	
-		const query = `UPDATE faqs SET question = ?, answer = ? WHERE id = ?`
-		const values = [newQuestion, newAnswer, id]
-		db.run(query, values, function(error){
+		
+		db.updateFaqById(newQuestion, newAnswer, id, function(error){
 
 			if(error){
 					
@@ -1032,10 +953,10 @@ app.post("/faq/update/:id", function(request, response){
 
 
 app.get('/comments', function (request, response) {
-	const query = `SELECT * FROM comments`
+	
 	const errorMessages = []
 
-	db.all(query, function(error, comments){
+	db.getAllComments(function(error, comments){
 
 		if(error){
 				
@@ -1073,15 +994,12 @@ app.post("/comments/create", function(request, response){
 
 	const errorMessages = getValidationErrorsForComment(author, topic, text, rating)
 
-	if(!request.session.isLoggedIn){
-		errorMessages.push('You are not logged in')
-	}
+	
 
 	if(errorMessages.length == 0){
 
-		const query = `INSERT INTO comments (author, topic, text, rating) VALUES (?, ?, ?, ?)`
-		const values = [author, topic, text, rating]
-		db.run(query, values, function(error){
+		
+		db.createComment(author, topic, text, rating, function(error){
 
 			if(error){
 				
@@ -1122,11 +1040,10 @@ app.post("/comments/create", function(request, response){
 app.get("/comment/update/:id", function (request, response) {
 	const id = request.params.id
 
-	const query = `SELECT * FROM comments WHERE id = ?`
-	const values = [id]
+	
 	const errorMessages = []
 
-	db.get(query, values, function(error, comment){
+	db.getCommentById(id, function(error, comment){
 
 		if(error){
 				
@@ -1166,10 +1083,7 @@ app.post("/comment/update/:id", function(request, response){
 	}
 
 	if(errorMessages.length == 0){
-
-		const query = `UPDATE comments SET author = ?, topic = ?, text = ?, rating = ? WHERE id = ?`
-		const values = [newAuthor, newTopic, newText, newRating, id]
-		db.run(query, values, function(error){
+		db.updateCommentById(newAuthor, newTopic, newText, newRating, id, function(error){
 
 			if(error){
 					
@@ -1214,9 +1128,7 @@ app.post("/comment/update/:id", function(request, response){
 
 app.post("/comment/delete/:id", function(request, response){
 	const id = request.params.id
-	const query = `DELETE FROM comments WHERE id = ?`
-	const values = [id]
-
+	
 
 	const errorMessages = []
 
@@ -1226,7 +1138,7 @@ app.post("/comment/delete/:id", function(request, response){
 
 	if(errorMessages.length == 0){
 	
-	db.run(query, values, function(error){
+	db.deleteCommentById(id, function(error){
 
 		if(error){
 				
