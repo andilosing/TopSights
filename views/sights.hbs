@@ -47,16 +47,19 @@
 		{{/each}}
 </div>
 
-		<ul class="pagination">  
-  {{#if pagination.prevPage}}<li class="page-item ">
-    <a href="/sights?page={{pagination.prevPage}}">{{pagination.prevPage}}</a>
+		<ul class="pagination"> 
+			
+  {{#if pagination.prevPage}}
+	
+	<li class="page-item">
+    <a href="/sights?page={{pagination.prevPage}}" class="text-dark bg-gray text-bold">{{pagination.prevPage}}</a>
   </li>
 	{{/if}}
   <li class="page-item">
-    <a href="/sights?page={{pagination.currentPage}}">{{pagination.currentPage}}</a>
+    <a href="/sights?page={{pagination.currentPage}}" class="text-dark bg-gray text-bold">{{pagination.currentPage}}</a>
   </li>
 	{{#if pagination.nextPage}}<li class="page-item ">
-    <a href="/sights?page={{pagination.nextPage}}">{{pagination.nextPage}}</a>
+    <a href="/sights?page={{pagination.nextPage}}" class="text-dark bg-gray text-bold">{{pagination.nextPage}}</a>
   </li>
 	{{/if}}
 </ul>
@@ -67,38 +70,3 @@
 
 {{/if}}
 
-
-
-
-<!-- <ul class="pagination">
-  <li class="page-item disabled">
-    <a href="#" tabindex="-1">Previous</a>
-  </li>
-  <li class="page-item active">
-    <a href="#">1</a>
-  </li>
-  <li class="page-item">
-    <a href="#">2</a>
-  </li>
-  <li class="page-item">
-    <a href="#">3</a>
-  </li>
-  <li class="page-item">
-    <span>...</span>
-  </li>
-  <li class="page-item">
-    <a href="#">12</a>
-  </li>
-  <li class="page-item">
-    <a href="#">Next</a>
-  </li>
-</ul>
-
-?page=2
-
-SELECT column1, column2, columnN 
-FROM table_name
-LIMIT [no of rows] OFFSET [row num]
-
--->
-  
