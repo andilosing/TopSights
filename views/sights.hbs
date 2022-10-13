@@ -1,36 +1,31 @@
 <h1 class="text-center">Sights</h1>
-				{{#if session.isLoggedIn}}
-							<form action="/sights/create" method="GET">	
-								<input type="submit" value="Create new sight">	
-							</form>
-							{{/if}}
+
+{{#if session.isLoggedIn}}
+	<form action="/sights/create" method="GET">	
+		<input type="submit" value="Create new sight">	
+	</form>
+{{/if}}
 
 {{#if errorMessages.length}}
-<div class="bg-primary">
-	<p>Couldn't {{operation}} the sights because:</p>
-	<ul>
-		{{#each errorMessages}}
-			<li>{{this}}</li>
-		{{/each}}
-	</ul>
+	<div class="bg-primary">
+		<p>Couldn't {{operation}} the sights because:</p>
+		<ul>
+			{{#each errorMessages}}
+				<li>{{this}}</li>
+			{{/each}}
+		</ul>
 	</div>
 {{/if}}
 
-
 {{#if sights.length}}
-
 	<form action="/sights/search" method="GET">	
-								<input type="submit" value="Search sights">	
-							</form>
+		<input type="submit" value="Search sights">	
+	</form>
 
-
-	<div class="grid-container">
- 
-		{{#each sights}}
-		
+	<div class="grid-container"> 
+		{{#each sights}}		
 			<div>
-				<div class="card border bg-gray">
-					
+				<div class="card border bg-gray">					
 					<div class="card-header">
 						<div class="card-title h5 bg-primary text-center"><a class="text-secondary" href="/sights/{{id}}">{{name}}</a></div>
 						<div class="card-subtitle text-gray">{{city}}, {{country}}</div>
@@ -43,30 +38,23 @@
 					</div>
 				</div>
 			</div>
-
 		{{/each}}
-</div>
+	</div>
 
-		<ul class="pagination"> 
-			
-  {{#if pagination.prevPage}}
-	
-	<li class="page-item">
-    <a href="/sights?page={{pagination.prevPage}}" class="text-dark bg-gray text-bold">{{pagination.prevPage}}</a>
-  </li>
-	{{/if}}
-  <li class="page-item">
-    <a href="/sights?page={{pagination.currentPage}}" class="text-dark bg-gray text-bold">{{pagination.currentPage}}</a>
-  </li>
-	{{#if pagination.nextPage}}<li class="page-item ">
-    <a href="/sights?page={{pagination.nextPage}}" class="text-dark bg-gray text-bold">{{pagination.nextPage}}</a>
-  </li>
-	{{/if}}
-</ul>
-
-	
-
-	
-
+	<ul class="pagination"> 			
+		{{#if pagination.prevPage}}	
+			<li class="page-item">
+				<a href="/sights?page={{pagination.prevPage}}" class="text-dark bg-gray text-bold">{{pagination.prevPage}}</a>
+			</li>
+		{{/if}}
+		<li class="page-item">
+			<a href="/sights?page={{pagination.currentPage}}" class="text-dark bg-gray text-bold">{{pagination.currentPage}}</a>
+		</li>
+		{{#if pagination.nextPage}}
+			<li class="page-item ">
+				<a href="/sights?page={{pagination.nextPage}}" class="text-dark bg-gray text-bold">{{pagination.nextPage}}</a>
+			</li>
+		{{/if}}
+	</ul>
 {{/if}}
 

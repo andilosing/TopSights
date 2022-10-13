@@ -10,6 +10,7 @@ const FAQ_ANSWER_MAX_LENGTH = 250
 
 //detect input errors for faqs
 function getValidationErrorsForFaq(question,answer){
+
 	const errorMessages = []
 	
 	if(question == ""){
@@ -25,9 +26,12 @@ function getValidationErrorsForFaq(question,answer){
 	}
 
 	return errorMessages
+
 }
 
+//GET /faqs
 router.get('/', function (request, response) {
+
 	const errorMessages = []
 
 	db.getAllFaqs(function(error, faqs){
@@ -43,36 +47,44 @@ router.get('/', function (request, response) {
 			}
 
 			response.render('faqs.hbs', model)
+
 		}else{
+
 			const model = {
 				errorMessages,
 				faqs,
 				operation: "get"
-
 			}
+
 			response.render('faqs.hbs', model)
+
 		}
 
 	})	
 })
 
-
+//GET /faqs/create
 router.get("/create", function(request, response){
+
 	response.render("create-faq.hbs")
+
 })
 
+//POST /faqs/create
 router.post("/create", function(request, response){	
+
 	const question = request.body.question
 	const answer = request.body.answer
 
 	const errorMessages = getValidationErrorsForFaq(question, answer)
 
 	if(!request.session.isLoggedIn){
+
 		errorMessages.push('You are not logged in')
+
 	}
 
 	if(errorMessages.length == 0){
-
 		
 		db.createFaq(question, answer, function(error){
 
@@ -88,31 +100,39 @@ router.post("/create", function(request, response){
 				}
 	
 				response.render('create-faq.hbs', model)
+				
 			}else{
+
 				response.redirect("/faqs")
+
 			}
-	})
+		})
+
 	} else{
+
 		const model = {
 			errorMessages,
 			question,
 			answer,
 			operation: "create"
-
 		}
-
 		
 		response.render('create-faq.hbs', model)
+
 	}
 })
 
+//POST /faqs/delete/1 /faqs/delete/2
 router.post("/delete/:id", function(request, response){
+
 	const id = request.params.id
 
 	const errorMessages = []
 
 	if(!request.session.isLoggedIn){
+
 		errorMessages.push('You are not logged in')
+
 	}
 
 	if(errorMessages.length == 0){
@@ -132,10 +152,12 @@ router.post("/delete/:id", function(request, response){
 			}
 
 			response.render('delete-error.hbs', model)
-		}else{
-			response.redirect("/faqs")
-		}
 
+		}else{
+
+			response.redirect("/faqs")
+
+		}
 	})	
 
 	}else{
@@ -146,17 +168,17 @@ router.post("/delete/:id", function(request, response){
 			pageName: "faqs",
 			deleteErrorFor: "faq",
 			operation: "delete"
-
 		}
+
 		response.render('delete-error.hbs', model)
 
-	}
-	
+	}	
 })
 
+//GET /faqs/update/1 faqs/update/2
 router.get("/update/:id", function (request, response) {
-	const id = request.params.id
 
+	const id = request.params.id
 	
 	const errorMessages = []
 
@@ -173,20 +195,24 @@ router.get("/update/:id", function (request, response) {
 			}
 
 			response.render('update-faq.hbs', model)
+
 		}else{
+
 			const model = {
 				errorMessages,
 				faq,
 				operation: "get"
-
 			}
-			response.render('update-faq.hbs', model)
-		}
 
+			response.render('update-faq.hbs', model)
+
+		}
 	})	
 })
 
+//POST /faqs/update/1 faqs/update/2
 router.post("/update/:id", function(request, response){
+
 	const id = request.params.id
 	const newQuestion = request.body.question
 	const newAnswer = request.body.answer
@@ -194,11 +220,12 @@ router.post("/update/:id", function(request, response){
 	const errorMessages = getValidationErrorsForFaq(newQuestion, newAnswer)
 
 	if(!request.session.isLoggedIn){
+
 		errorMessages.push('You are not logged in')
+
 	}
 
-	if(errorMessages.length == 0){
-	
+	if(errorMessages.length == 0){	
 		
 		db.updateFaqById(newQuestion, newAnswer, id, function(error){
 
@@ -217,23 +244,26 @@ router.post("/update/:id", function(request, response){
 					}
 
 				response.render('update-faq.hbs', model)
+
 			}else{
+
 				response.redirect("/faqs")
-			}
-			
+
+			}			
 		}) 
-	} else{
+
+	}else{
 		const model= {
 			errorMessages,
 					faq: {
 						id,
 						question: newQuestion,
 						answer: newAnswer,
-
 						},
 						operation: "update"
-
 		}
+
 		response.render('update-faq.hbs', model)
+	
 	}
 })

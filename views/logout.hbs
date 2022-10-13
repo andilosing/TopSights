@@ -1,16 +1,16 @@
 <h1 class="text-center">Logout</h1>
 
 {{#if errorMessages.length}}
-<div class="bg-primary">
-	<p>Couldn't logout because:</p>
-	<ul>
-		{{#each errorMessages}}
-			<li>{{this}}</li>
-		{{/each}}
-	</ul>
+	<div class="bg-primary">
+		<p>Couldn't logout because:</p>
+		<ul>
+			{{#each errorMessages}}
+				<li>{{this}}</li>
+			{{/each}}
+		</ul>
 	</div>
 {{/if}}
 
 <form action="/logout" method="POST">
-    <input type="submit" value="Logout">
+	<input type="submit" value="Logout">
 </form>

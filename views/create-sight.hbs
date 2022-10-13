@@ -1,17 +1,15 @@
-
 <h1 class="text-center">Create Sight</h1>
 
 {{#if errorMessages.length}}
-<div class="bg-primary">
-	<p>Couldn't {{operation}} the sight because:</p>
-	<ul>
-		{{#each errorMessages}}
-			<li>{{this}}</li>
-		{{/each}}
-	</ul>
+	<div class="bg-primary">
+		<p>Couldn't {{operation}} the sight because:</p>
+		<ul>
+			{{#each errorMessages}}
+				<li>{{this}}</li>
+			{{/each}}
+		</ul>
 	</div>
 {{/if}}
-
 
 <form action="/sights/create" method="post" enctype="multipart/form-data">	
 	<div>
@@ -23,8 +21,7 @@
 	<div>
 		Country: <input type="text" name="country" value="{{country}}">
 	</div>
-	<!-- funktioniert nicht , buffed reader auch nicht!-->
-    <div>
+	<div>
 		Info: <textarea  type ="text" name="info"  style="height:200px" >{{info}}</textarea>
 	</div>
 	<div>

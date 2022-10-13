@@ -1,31 +1,27 @@
 <h1 class="text-center">FAQs</h1>
+
 {{#if session.isLoggedIn}}
-<form action="/faqs/create" method="GET">	
-								<input type="submit" value="Create new FAQ">	
-							</form>
-							{{/if}}
-
-
-							{{#if errorMessages.length}}
-							<div class="bg-primary">
-	<p>Couldn't {{operation}} the FAQ because:</p>
-	<ul>
-		{{#each errorMessages}}
-			<li>{{this}}</li>
-		{{/each}}
-	</ul>
-	</div>
+	<form action="/faqs/create" method="GET">	
+		<input type="submit" value="Create new FAQ">	
+	</form>
 {{/if}}
 
 
+{{#if errorMessages.length}}
+	<div class="bg-primary">
+		<p>Couldn't {{operation}} the FAQ because:</p>
+		<ul>
+			{{#each errorMessages}}
+				<li>{{this}}</li>
+			{{/each}}
+		</ul>
+	</div>
+{{/if}}
+
 <div class="accordion">
-
 	{{#if faqs.length}}
-
-		<div class="grid-container-faq">
-		
+		<div class="grid-container-faq">		
 			{{#each faqs}}
-
 				<div>
 					<div class="accordion lower-line-faq">
 						<input type="radio" id="{{id}}" name="accordion-radio" hidden>
@@ -34,31 +30,27 @@
 							Question: {{question}}
 						</label>
 						<div class="accordion-body faq-answer">
-							 {{answer}}
-
-							 {{#if session.isLoggedIn}}
+							{{answer}}
+							{{#if session.isLoggedIn}}
 								<form action="/faqs/delete/{{id}}" method="POST">	
-								<input type="submit" value="Delete">	
-							</form>
-							<form action="/faqs/update/{{id}}" method="GET">	
-								<input type="submit" value="Update">	
-							</form>
+									<input type="submit" value="Delete">	
+								</form>
+								<form action="/faqs/update/{{id}}" method="GET">	
+									<input type="submit" value="Update">	
+								</form>
 							{{/if}}
-
-
-							
-
-						</div>
-						
+						</div>						
 					</div>
 				</div>
 			{{/each}}
 		</div>
 	</div>
-	{{else}}
-
+{{else}}
 		We have no faq available at the moment. Sorry!
+{{/if}}
 
-	{{/if}}
+<!-- andern!!! raigbaergiqebijg
+rgöhhebgföiewbgfwef
+EÄGFBQEIRGFIUQERBG --> 
 
 	

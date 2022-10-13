@@ -1,13 +1,13 @@
 <h1 class="text-center">Write a new comment</h1>
 
 {{#if errorMessages.length}}
-<div class="bg-primary">
-	<p>Couldn't {{operation}} the Comment because:</p>
-	<ul>
-		{{#each errorMessages}}
-			<li>{{this}}</li>
-		{{/each}}
-	</ul>
+	<div class="bg-primary">
+		<p>Couldn't {{operation}} the Comment because:</p>
+		<ul>
+			{{#each errorMessages}}
+				<li>{{this}}</li>
+			{{/each}}
+		</ul>
 	</div>
 {{/if}}
 

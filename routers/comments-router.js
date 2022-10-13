@@ -13,6 +13,7 @@ const COMMENT_RATING_MAX_NUMBER = 10
 
 //detect input error for comments
 function getValidationErrorsForComment(author, topic, text, rating){
+
 	const errorMessages = []
 
 	if(author == ""){
@@ -39,21 +40,25 @@ function getValidationErrorsForComment(author, topic, text, rating){
 		errorMessages.push("Rating can't be empty")
 	}else if(rating < 0){
 		errorMessages.push("Rating may not be negative")
-	}else if(10 < rating){
+	}else if(rating == 0){
+		errorMessages.push("Rating may not be 0")
+	}else if(COMMENT_RATING_MAX_NUMBER < rating){
 		errorMessages.push("Rating may at most be 10")
 	}
 
 	return errorMessages
+
 }
 
-router.get('/', function (request, response) {
-	
+//GET /comments
+router.get('/', function (request, response) {	
+
 	const errorMessages = []
 
 	db.getAllComments(function(error, comments){
 
 		if(error){
-				
+							
 			errorMessages.push("Internal server error")
 
 			const model = {
@@ -63,35 +68,40 @@ router.get('/', function (request, response) {
 			}
 
 			response.render('comments.hbs', model)
+
 		}else{
+
 			const model = {
 				errorMessages,
 				comments,
 				operation: "get"
-
 			}
+
 			response.render('comments.hbs', model)
+
 		}
 
 	})
 })
 
+//GET /comments/create
 router.get("/create", function(request, response){
+
 	response.render("create-comment.hbs")
+
 })
 
+//POST /comments/create
 router.post("/create", function(request, response){	
+
 	const author = request.body.author
 	const topic = request.body.topic
 	const text = request.body.text
 	const rating = parseInt(request.body.rating)
 
-	const errorMessages = getValidationErrorsForComment(author, topic, text, rating)
-
-	
+	const errorMessages = getValidationErrorsForComment(author, topic, text, rating)	
 
 	if(errorMessages.length == 0){
-
 		
 		db.createComment(author, topic, text, rating, function(error){
 
@@ -109,10 +119,14 @@ router.post("/create", function(request, response){
 				}
 	
 				response.render('create-comment.hbs', model)
+
 			}else{
+
 				response.redirect("/comments")
+
 			}
 		})
+
 	} else{
 
 		const model = {
@@ -129,10 +143,10 @@ router.post("/create", function(request, response){
 	}
 })
 
-
+//GET /comments/update/1 /comments/update/2
 router.get("/update/:id", function (request, response) {
-	const id = request.params.id
 
+	const id = request.params.id
 	
 	const errorMessages = []
 
@@ -149,20 +163,24 @@ router.get("/update/:id", function (request, response) {
 			}
 
 			response.render('update-comment.hbs', model)
+
 		}else{
+
 			const model = {
 				errorMessages,
 				comment,
 				operation: "get"
-
 			}
-			response.render('update-comment.hbs', model)
-		}
 
+			response.render('update-comment.hbs', model)
+
+		}
 	})	
 })
 
+//POST /comments/update/1 /comments/update/2
 router.post("/update/:id", function(request, response){
+
 	const id = request.params.id
 	const newAuthor = request.body.author
 	const newTopic = request.body.topic
@@ -172,10 +190,13 @@ router.post("/update/:id", function(request, response){
 	const errorMessages = getValidationErrorsForComment(newAuthor, newTopic, newText, newRating)
 
 	if(!request.session.isLoggedIn){
+
 		errorMessages.push('You are not logged in')
+
 	}
 
 	if(errorMessages.length == 0){
+
 		db.updateCommentById(newAuthor, newTopic, newText, newRating, id, function(error){
 
 			if(error){
@@ -189,18 +210,22 @@ router.post("/update/:id", function(request, response){
 						author: newAuthor,
 						topic: newTopic,
 						text: newText,
-						rating: newRating
-						
+						rating: newRating						
 						},
 						operation: "update"
 					}
 
 				response.render('update-comment.hbs', model)
+
 			}else{
+
 				response.redirect("/comments")
+
 			}
 		})
+
 	}else{
+
 		const model= {
 			errorMessages,
 			comment: {
@@ -209,24 +234,27 @@ router.post("/update/:id", function(request, response){
 				topic: newTopic,
 				text: newText,
 				rating: newRating
-				
-
 				},
 				operation: "update"
 
 		}
+
 		response.render('update-comment.hbs', model)
+
 	}
 })
 
+//POST /comments/delete/1 /comments/delete/2
 router.post("/delete/:id", function(request, response){
-	const id = request.params.id
-	
+
+	const id = request.params.id	
 
 	const errorMessages = []
 
 	if(!request.session.isLoggedIn){
+
 		errorMessages.push('You are not logged in')
+
 	}
 
 	if(errorMessages.length == 0){
@@ -246,10 +274,12 @@ router.post("/delete/:id", function(request, response){
 			}
 
 			response.render('delete-error.hbs', model)
-		}else{
-			response.redirect("/comments")
-		}
 
+		}else{
+
+			response.redirect("/comments")
+
+		}
 	})	
 
 	}else{
@@ -260,10 +290,9 @@ router.post("/delete/:id", function(request, response){
 			pageName: "comments",
 			deleteErrorFor: "comment",
 			operation: "delete"
-
 		}
+
 		response.render('delete-error.hbs', model)
 
-	}
-	
+	}	
 })

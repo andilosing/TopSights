@@ -1,17 +1,15 @@
 <h1 class="text-center">Create FAQ</h1>
 
 {{#if errorMessages.length}}
-<div class="bg-primary">
-	<p>Couldn't {{operation}} the FAQ because:</p>
-	<ul>
-		{{#each errorMessages}}
-			<li>{{this}}</li>
-		{{/each}}
-	</ul>
+	<div class="bg-primary">
+		<p>Couldn't {{operation}} the FAQ because:</p>
+		<ul>
+			{{#each errorMessages}}
+				<li>{{this}}</li>
+			{{/each}}
+		</ul>
 	</div>
 {{/if}}
-
-
 
 <form action="/faqs/create" method="post">	
 	<div>

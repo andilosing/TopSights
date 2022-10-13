@@ -1,16 +1,12 @@
 <h1 class="text-center">Comments</h1>
 
 <form action="/comments/create" method="GET">	
-								<input type="submit" value="Create new comment">	
-							</form>
-
+	<input type="submit" value="Create new comment">	
+</form>
 			
 {{#if comments.length}}
-
 	<div class="grid-container">
-
 		{{#each comments}}
-
 			<div>
 				<div class="card border bg-gray ">
 					<div class="card-header">
@@ -23,25 +19,19 @@
 					</div>				
 					<div>
 						{{#if session.isLoggedIn}}
-						<form action="/comments/update/{{id}}" method="GET">	
-						<input type="submit" value="Update">	
-					</form>
-					<form action="/comments/delete/{{id}}" method="POST">	
-						<input type="submit" value="Delete">	
-					</form>
-					{{/if}}
-					
+							<form action="/comments/update/{{id}}" method="GET">	
+								<input type="submit" value="Update">	
+							</form>
+							<form action="/comments/delete/{{id}}" method="POST">	
+								<input type="submit" value="Delete">	
+							</form>
+						{{/if}}					
 					</div>
 				</div>
 			</div>
-
 		{{/each}}
-
 	</div>
-
 {{else}}
-
 	<p>Sorry. At the moment no comments available!</p>
-
 {{/if}}
 

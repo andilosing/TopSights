@@ -1,23 +1,23 @@
 <h1 class="text-center">Login</h1>
 
-	{{#if errorMessages.length}}
-    <div class="bg-primary">
-	<p>Couldn't Login because:</p>
-	<ul>
-		{{#each errorMessages}}
-			<li>{{this}}</li>
-		{{/each}}
-	</ul>
-    </div>
+{{#if errorMessages.length}}
+	<div class="bg-primary">
+		<p>Couldn't Login because:</p>
+		<ul>
+			{{#each errorMessages}}
+				<li>{{this}}</li>
+			{{/each}}
+		</ul>
+	</div>
 {{/if}}
 
 
 <form action="/login" method="POST">
-    <div>
-        Username: <input type="text" name="username" value="{{enteredUsername}}">
-    </div>
-    <div>
-        Password: <input type="password" name="password" vale="{{enteredPassword}}">
-    </div>
-    <input type="submit" value="Login">
+	<div>
+		Username: <input type="text" name="username" value="{{enteredUsername}}">
+	</div>
+	<div>
+		Password: <input type="password" name="password" vale="{{enteredPassword}}">
+	</div>
+	<input type="submit" value="Login">
 </form>

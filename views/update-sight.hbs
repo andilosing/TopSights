@@ -1,13 +1,13 @@
 <h1>Update Sight</h1>
 
 {{#if errorMessages.length}}
-<div class="bg-primary">
-	<p >Couldn't {{operation}} the sight because:</p>
-	<ul>
-		{{#each errorMessages}}
-			<li>{{this}}</li>
-		{{/each}}
-	</ul>
+	<div class="bg-primary">
+		<p >Couldn't {{operation}} the sight because:</p>
+		<ul>
+			{{#each errorMessages}}
+				<li>{{this}}</li>
+			{{/each}}
+		</ul>
 	</div>
 {{/if}}
 
@@ -26,10 +26,9 @@
 			Info: <textarea  type="text" name="info"  style="height:200px">{{sight.info}}</textarea>
 		</div>
 		<div>
-   				Current image: 		 <img alt="{{sight.name}},{{sight.name}}" src="data:image/png;base64, {{sight.image}}"  height="24%" name = "currentImage" width="60%" class="img-responsive p-centered">
-		
+			Current image: <img alt="{{sight.name}},{{sight.name}}" src="data:image/png;base64, {{sight.image}}"  height="24%" name = "currentImage" width="60%" class="img-responsive p-centered">
 			Upload new image: <Input  type ="file" name="image" > 
 		</div>
-			<input type="submit" value="Update">
+		<input type="submit" value="Update">
 	</div>
 </form>

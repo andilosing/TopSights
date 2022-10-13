@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+	<head>
 
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>TopSights</title>
-	<link rel="stylesheet" href="/spectre.min.css">
-	<link rel="stylesheet" href="/spectre-icons.css">
-	<link rel="stylesheet" href="/spectre-icons.min.css">
-	<link rel="stylesheet" href="/layout.css">
-	<link rel="stylesheet" href="/faqs.css">
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>TopSights</title>
+		<link rel="stylesheet" href="/spectre.min.css">
+		<link rel="stylesheet" href="/spectre-icons.css">
+		<link rel="stylesheet" href="/spectre-icons.min.css">
+		<link rel="stylesheet" href="/layout.css">
+		<link rel="stylesheet" href="/faqs.css">
 
-</head>
+	</head>
 
-<body>
+	<body>
 
-	<header class="navbar bg-dark">
-		
-		
+		<header class="navbar bg-dark">	
+						
 			<section class="navbar-section">
 				<a href="/sights" class="btn btn-link">Sights</a>
 				<a href="/faqs" class="btn btn-link">FAQs</a>
@@ -30,28 +29,30 @@
 			</section>
 			<section class="navbar-section">
 				{{#unless session.isLoggedIn}}
-				<a href="/login" class="btn btn-link">Login</a>
+					<a href="/login" class="btn btn-link">Login</a>
 				{{/unless}}
 				{{#if session.isLoggedIn}}
-				<a href="/logout" class="btn btn-link">Logout</a>
+					<a href="/logout" class="btn btn-link">Logout</a>
 				{{/if}}
 			</section>
 		
-	
-	</header>
+		</header>
 
 
-	<body>
-		{{{body}}}
+		<body>
+		
+			{{{body}}}
+		
+		</body>
+		
+		<footer >
+		
+			&copy; Andreas Losing 2022 
+			<a href="/about" class="btn btn-link">About</a>
+			<a href="/contact" class="btn btn-link">Contact</a>
+		
+		</footer>
+
 	</body>
-	
-
-	<footer >
-		&copy; Andreas Losing 2022 
-		<a href="/about" class="btn btn-link">About</a>
-		<a href="/contact" class="btn btn-link">Contact</a>
-	</footer>
-
-</body>
 
 </html>

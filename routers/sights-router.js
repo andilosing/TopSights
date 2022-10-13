@@ -15,13 +15,16 @@ const SIGHT_CITY_MAX_LENGTH = 40
 const SIGHT_COUNTRY_MAX_LENGTH = 40
 const SIGHT_INFO_MAX_LENGTH = 250
 
+// Const for sight pagination page limit
+const PAGINATION_PAGE_LIMIT = 4
+
 // pagination
 function paginate(currentPage, pageLimit, totalItems) {
 
 	const totalPages = Math.ceil(totalItems / pageLimit)
 	let prevPage, nextPage
-
 	currentPage = parseInt(currentPage)
+
 	if(currentPage <= 1) {
 		currentPage = 1
 		nextPage = totalPages > currentPage ? currentPage +1 : false
@@ -36,17 +39,19 @@ function paginate(currentPage, pageLimit, totalItems) {
 	}
 
 	return{
+
 		prevPage: prevPage, 
 		currentPage: currentPage, 
 		nextPage: nextPage,
 		offset: (currentPage - 1) * pageLimit,
 		limit: pageLimit
-	}
 
+	}
 }
 
 //detect input errors for sights
 function getValidationErrorsForSight(name, city, country, info, requestFile){
+
 	const errorMessages = []
 	
 	if(name == ""){
@@ -74,28 +79,32 @@ function getValidationErrorsForSight(name, city, country, info, requestFile){
 	}
 
 // Input validation for ulpoad an image
-	if(requestFile == undefined){		
+	if(requestFile == undefined){	
+
 			} else{
-	if(requestFile.mimetype == "image/jpg" || requestFile.mimetype == "image/png"  || requestFile.mimetype == "image/jpeg"){
-		image = requestFile.buffer.toString('base64')
-	}else{
-		errorMessages.push("Image type must be .png, .jpg or .jpeg")		
-	}}
+				if(requestFile.mimetype == "image/jpg" || requestFile.mimetype == "image/png"  || requestFile.mimetype == "image/jpeg"){
+					image = requestFile.buffer.toString('base64')
+					}else{
+						errorMessages.push("Image type must be .png, .jpg or .jpeg")	
+						}
+					}
 
 	return errorMessages
+
 }
 
-
+//GET /sights
 router.get('/', function (request, response) {
-	const {page} = request.query
-	const pageLimit = 4
 
+	const {page} = request.query
 	const currentPage = !isNaN(page) ? page : 1	
 	
 	const errorMessages = []
 
 	db.getTotalItems(function(error, totalItems){
+
 		if (error) {
+
 			errorMessages.push("Internal server error")
 		
 			const model = {
@@ -103,10 +112,15 @@ router.get('/', function (request, response) {
 				sights,
 				operation: "get"
 			}
+
 		} else {
-			const pagination = paginate(currentPage, pageLimit,  totalItems.count)
+
+			const pagination = paginate(currentPage, PAGINATION_PAGE_LIMIT,  totalItems.count)
+
 			db.getAllSights(pagination.limit, pagination.offset, function(error, sights){
+
 				if(error){
+
 					errorMessages.push("Internal server error")
 		
 					const model = {
@@ -116,27 +130,34 @@ router.get('/', function (request, response) {
 					}
 		
 					response.render('sights.hbs', model)
+
 				} else {
+
 					const model = {
 						errorMessages,
 						pagination,
 						sights,
 						operation: "get"
 					}
+
 					response.render('sights.hbs', model)
+
 				}
-			})
-			 
+			})			 
 		}
 	})
 })
 
+//GET /sights/search
 router.get('/search', function (request, response) {
+
 	response.render('search-sights.hbs')
+
 })
 
-
+//POST /sights/search
 router.post("/search", function(request, response){	
+
 	let name = request.body.name
 	let city = request.body.city
 	let country = request.body.country
@@ -146,7 +167,9 @@ router.post("/search", function(request, response){
 	db.getSightsByFiltering(name, city, country, function(error, sights){
 
 		if(error){
+
 			errorMessages.push("Internal Server Error")
+
 			const model = {
 				sights,
 				name,
@@ -155,40 +178,38 @@ router.post("/search", function(request, response){
 				errorMessages,
 				performedSearch: false
 			}
+
 			response.render('search-sights.hbs', model)
 
 		}else{
+
 			const model = {
 				sights,
 				name,
 				city,
 				country,
 				errorMessages, 
-				performedSearch: true
-	
-			}
-	
+				performedSearch: true	
+			}	
 			
 			response.render('search-sights.hbs', model)
 
-		}
-
-		
-	
-		
+		}		
 	})
-
 })
 
-
+//POST /sights/delete/1 /sights/delete/2
 router.post("/delete/:id", function(request, response){
+
 	const id = request.params.id
 
 	const errorMessages = []
 
 	if(!request.session.isLoggedIn){
+
 		errorMessages.push('You are not logged in')
 	}
+
 
 	if(errorMessages.length == 0){
 	
@@ -207,10 +228,12 @@ router.post("/delete/:id", function(request, response){
 			}
 
 			response.render('delete-error.hbs', model)
-		}else{
-			response.redirect("/sights")
-		}
 
+		}else{
+
+			response.redirect("/sights")
+
+		}
 	})	
 
 	}else{
@@ -221,21 +244,22 @@ router.post("/delete/:id", function(request, response){
 			pageName: "sights",
 			deleteErrorFor: "sight",
 			operation: "delete"
-
 		}
+
 		response.render('delete-error.hbs', model)
 
 	}
 })
 
-
+//GET /sights/update/1 /sights/update/2
 router.get("/update/:id", function (request, response) {
+
 	const id = request.params.id
 
-	
-
 	const errorMessages = []
+
 	db.getSightById(id,  function(error, sight){
+
 		if(error){
 				
 			errorMessages.push("Internal server error")
@@ -247,20 +271,23 @@ router.get("/update/:id", function (request, response) {
 			}
 
 			response.render('update-sight.hbs', model)
+
 		}else{
+
 			const model = {
 				errorMessages,
 				sight,
 				operation: "get"
-
 			}
+
 			response.render('update-sight.hbs', model)
 		}
-	})
-		
+	})		
 })
 
+//POST /sights/update/1 /sights/update/2
 router.post("/update/:id", upload.single('image'), function(request, response){
+
 	const id = request.params.id
 	const newName = request.body.name
 	const newCity = request.body.city
@@ -270,19 +297,19 @@ router.post("/update/:id", upload.single('image'), function(request, response){
 	const errorMessages = getValidationErrorsForSight(newName, newCity, newCountry, newInfo, request.file)
 
 	if(!request.session.isLoggedIn){
+
 		errorMessages.push('You are not logged in')
 	}
+
 
 	if(errorMessages.length == 0){
 
 		if(request.file == undefined){
-
 		
-		db.updateSightByIdWithoutNewImage(newName, newCity, newCountry, newInfo, id, function(error){
-
-			if(error){
+			db.updateSightByIdWithoutNewImage(newName, newCity, newCountry, newInfo, id, function(error){
 				
-				
+				if(error){
+						
 				errorMessages.push("Internal server error")
 	
 				const model = {
@@ -295,20 +322,21 @@ router.post("/update/:id", upload.single('image'), function(request, response){
 						info: newInfo,
 						},
 						operation: "update"
-
 					}
 	
 				response.render('update-sight.hbs', model)
-			}else{
-				response.redirect("/sights")
-			}
-			
-		})
 
+			}else{
+
+				response.redirect("/sights")
+
+			}			
+		})
 
 		}else{
 
 		newImage = request.file.buffer.toString('base64')
+
 		db.updateSightByIdWithNewImage(newName, newCity, newCountry, newInfo, newImage, id, function(error){
 
 			if(error){
@@ -323,25 +351,21 @@ router.post("/update/:id", upload.single('image'), function(request, response){
 						city: newCity,
 						country: newCountry,
 						info: newInfo,
-
 						},
 						operation: "update"
-
 					}
 	
 				response.render('update-sight.hbs', model)
+
 			}else{
+
 				response.redirect("/sights")
-			}
-			
+
+			}			
 		})
+	}
 
-		}
-
-		
-
-
-	} else{
+	}else{
 
 		const model= {
 			errorMessages,
@@ -351,21 +375,25 @@ router.post("/update/:id", upload.single('image'), function(request, response){
 				city: newCity,
 				country: newCountry,
 				info: newInfo,
-				
-
 			} ,
 			operation: "update"
-
 		}
+
 		response.render('update-sight.hbs', model)
+
 	}
 })
 
+//GET /sights/create
 router.get("/create", function(request, response){
+
 	response.render("create-sight.hbs")
+
 })
 
+//POST /sights/update
 router.post("/create", upload.single('image'), function(request, response){	
+
 	const name = request.body.name
 	const city = request.body.city
 	const country = request.body.country
@@ -375,43 +403,47 @@ router.post("/create", upload.single('image'), function(request, response){
 	const errorMessages = getValidationErrorsForSight(name, city, country, info, request.file)
 
 	if(!request.session.isLoggedIn){
+
 		errorMessages.push('You are not logged in')
+
 	}
 
 	if(request.file == undefined){
+
 		errorMessages.push("Image cant be empty")	
 	}
+
 	
 	if(errorMessages.length == 0){
 	
 		 image = request.file.buffer.toString('base64')
-
-	
-	db.createSight(name, city, country, info, image, function(error){
-
-		if(error){
-				
-			errorMessages.push("Internal server error")
-
-			const model = {
-				errorMessages,
-				name,
-				city,
-				country,
-				info,
-				image,
-				operation: "create"
-			}
-
-			response.render('create-sight.hbs', model)
-		}else{
-			response.redirect("/sights")
-		}
-
+		 
+		 db.createSight(name, city, country, info, image, function(error){
 			
-	})
+			if(error){
+				
+				errorMessages.push("Internal server error")
 
-	} else{
+				const model = {
+					errorMessages,
+					name,
+					city,
+					country,
+					info,
+					image,
+					operation: "create"
+				}
+
+				response.render('create-sight.hbs', model)
+			
+			}else{
+
+			response.redirect("/sights")
+
+			}			
+		})
+
+	}else{
 		
 		const model = {
 			errorMessages,
@@ -421,40 +453,44 @@ router.post("/create", upload.single('image'), function(request, response){
 			info,
 			image,
 			operation: "create"
-
 		}
-
 		
 		response.render('create-sight.hbs', model)
 		
 	}
 })
 
+//GET /sights/1 /sights/2
 router.get("/:id", function (request, response) {
+
 	const id = request.params.id
 	
 	const errorMessages = []
 
-db.getSightById(id,  function(error, sight){
-	if(error){
-				
-		errorMessages.push("Internal server error")
+	db.getSightById(id,  function(error, sight){
 
-		const model = {
-			errorMessages,
-			sight,
-			operation: "get"
+		if(error){
+					
+			errorMessages.push("Internal server error")
+
+			const model = {
+				errorMessages,
+				sight,
+				operation: "get"
+			}
+
+			response.render('sight.hbs', model)
+
+		}else{
+
+			const model = {
+				errorMessages,
+				sight,
+				operation: "get"
+			}
+
+			response.render('sight.hbs', model)
+
 		}
-
-		response.render('sight.hbs', model)
-	}else{
-		const model = {
-			errorMessages,
-			sight,
-			operation: "get"
-
-		}
-		response.render('sight.hbs', model)
-	}
-} )
+	})
 })
