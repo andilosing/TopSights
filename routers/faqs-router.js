@@ -14,15 +14,23 @@ function getValidationErrorsForFaq(question,answer){
 	const errorMessages = []
 	
 	if(question == ""){
+
 		errorMessages.push("Question can't be empty")
+
 	}else if(FAQ_QUESTION_MAX_LENGTH < question.length){
+
 		errorMessages.push("Question must be shorter than "+FAQ_QUESTION_MAX_LENGTH+" characters long")
+
 	}
 
 	if(answer == ""){
+
 		errorMessages.push("Answer can't be empty")
+
 	}else if(FAQ_ANSWER_MAX_LENGTH < answer.length){
+
 		errorMessages.push("Answer must be shorter than "+FAQ_ANSWER_MAX_LENGTH+" characters long")
+		
 	}
 
 	return errorMessages
@@ -137,28 +145,28 @@ router.post("/delete/:id", function(request, response){
 
 	if(errorMessages.length == 0){
 	
-	db.deleteFaqById(id, function(error){
+		db.deleteFaqById(id, function(error){
 
-		if(error){
-				
-			errorMessages.push("Internal server error")
+			if(error){
+					
+				errorMessages.push("Internal server error")
 
-			const model = {
-				errorMessages,
-				pagePath: "/faqs",
-				pageName: "faqs",
-				deleteErrorFor: "faq",
-				operation: "delete"
+				const model = {
+					errorMessages,
+					pagePath: "/faqs",
+					pageName: "faqs",
+					deleteErrorFor: "faq",
+					operation: "delete"
+				}
+
+				response.render('delete-error.hbs', model)
+
+			}else{
+
+				response.redirect("/faqs")
+
 			}
-
-			response.render('delete-error.hbs', model)
-
-		}else{
-
-			response.redirect("/faqs")
-
-		}
-	})	
+		})	
 
 	}else{
 

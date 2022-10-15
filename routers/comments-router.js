@@ -10,40 +10,61 @@ const COMMENT_TOPIC_MAX_LENGTH = 40
 const COMMENT_TEXT_MAX_LENGTH = 40
 const COMMENT_RATING_MAX_NUMBER = 10
 
-
 //detect input error for comments
 function getValidationErrorsForComment(author, topic, text, rating){
 
 	const errorMessages = []
 
 	if(author == ""){
+
 		errorMessages.push("Author can't be empty")
+
 	}else if(COMMENT_AUTHOR_MAX_LENGTH < author.length){
+
 		errorMessages.push("Author must be shorter than "+COMMENT_AUTHOR_MAX_LENGTH+" characters long")
+
 	}
 
 	if(topic == ""){
+
 		errorMessages.push("Topic can't be empty")
+
 	}else if(COMMENT_TOPIC_MAX_LENGTH < topic.length){
+
 		errorMessages.push("Topic must be shorter than "+COMMENT_TOPIC_MAX_LENGTH+" characters long")
+
 	}
 
 	if(text == ""){
+
 		errorMessages.push("Text can't be empty")
+
 	}else if(COMMENT_TEXT_MAX_LENGTH < topic.length){
+
 		errorMessages.push("Text must be shorter than "+COMMENT_TEXT_MAX_LENGTH+" characters long")
+
 	}
 
 	if(isNaN(rating)){
+
 		errorMessages.push("You did not enter a number for the rating")
+
 	}else if(rating == ""){
+
 		errorMessages.push("Rating can't be empty")
+
 	}else if(rating < 0){
+
 		errorMessages.push("Rating may not be negative")
+
 	}else if(rating == 0){
+
 		errorMessages.push("Rating may not be 0")
+
 	}else if(COMMENT_RATING_MAX_NUMBER < rating){
+
 		errorMessages.push("Rating may at most be 10")
+		
 	}
 
 	return errorMessages

@@ -18,20 +18,20 @@
 						<p class="bg-secondary">Rating: ({{rating}}/10)</p>	
 					</div>				
 					<div>
-						{{#if session.isLoggedIn}}
+						{{#if ../session.isLoggedIn}}
 							<form action="/comments/update/{{id}}" method="GET">	
 								<input type="submit" value="Update">	
 							</form>
 							<form action="/comments/delete/{{id}}" method="POST">	
 								<input type="submit" value="Delete">	
 							</form>
-						{{/if}}					
+						{{/if}}
 					</div>
 				</div>
 			</div>
 		{{/each}}
 	</div>
 {{else}}
-	<p>Sorry. At the moment no comments available!</p>
+	<p class="text-center">Sorry. At the moment no comments available!</p>
 {{/if}}
 

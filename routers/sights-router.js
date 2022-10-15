@@ -16,35 +16,42 @@ const SIGHT_COUNTRY_MAX_LENGTH = 40
 const SIGHT_INFO_MAX_LENGTH = 250
 
 // Const for sight pagination page limit
-const PAGINATION_PAGE_LIMIT = 4
+const PAGINATION_PAGE_LIMIT = 2
 
 // pagination
-function paginate(currentPage, pageLimit, totalItems) {
+function paginate(currentSightPage, pageLimitForPagination, totalSightItems) {
 
-	const totalPages = Math.ceil(totalItems / pageLimit)
-	let prevPage, nextPage
-	currentPage = parseInt(currentPage)
+	const totalSightPages = Math.ceil(totalSightItems / pageLimitForPagination)
+	let previousPage
+	let nextPage
+	currentSightPage = parseInt(currentSightPage)
 
-	if(currentPage <= 1) {
-		currentPage = 1
-		nextPage = totalPages > currentPage ? currentPage +1 : false
-		prevPage = false
-	} else if( currentPage >= totalPages){
-		currentPage = totalPages
-		prevPage = currentPage - 1
+	if(currentSightPage <= 1) {
+
+		currentSightPage = 1
+		nextPage = totalSightPages > currentSightPage ? currentSightPage +1 : false
+		previousPage = false
+
+	} else if( currentSightPage >= totalSightPages){
+
+		currentSightPage = totalSightPages
+		previousPage = currentSightPage - 1
 		nextPage = false
+
 	} else {
-		prevPage = currentPage - 1 
-		nextPage = currentPage + 1
+
+		previousPage = currentSightPage - 1 
+		nextPage = currentSightPage + 1
+		
 	}
 
 	return{
 
-		prevPage: prevPage, 
-		currentPage: currentPage, 
+		prevPage: previousPage, 
+		currentPage: currentSightPage, 
 		nextPage: nextPage,
-		offset: (currentPage - 1) * pageLimit,
-		limit: pageLimit
+		offset: (currentSightPage - 1) * pageLimitForPagination,
+		limit: pageLimitForPagination
 
 	}
 }
@@ -55,39 +62,58 @@ function getValidationErrorsForSight(name, city, country, info, requestFile){
 	const errorMessages = []
 	
 	if(name == ""){
+
 		errorMessages.push("Name can't be empty")
+
 	}else if(SIGHT_NAME_MAX_LENGTH < name.length){
+
 		errorMessages.push("Name must be shorter than "+SIGHT_NAME_MAX_LENGTH+" characters long")
+
 	}
 
 	if(city == ""){
+
 		errorMessages.push("City can't be empty")
+
 	}else if(SIGHT_CITY_MAX_LENGTH < city.length){
+
 		errorMessages.push("City must be shorter than "+SIGHT_CITY_MAX_LENGTH+" characters long")
+
 	}
 
 	if(country == ""){
+
 		errorMessages.push("Country can't be empty")
+
 	}else if(SIGHT_COUNTRY_MAX_LENGTH < country.length){
+
 		errorMessages.push("Country must be shorter than "+SIGHT_COUNTRY_MAX_LENGTH+" characters long")
+
 	}
 
 	if(info == ""){
+
 		errorMessages.push("Info of sight can't be empty")
+
 	}else if(SIGHT_INFO_MAX_LENGTH < info.length){
+
 		errorMessages.push("Info must be shorter than "+SIGHT_INFO_MAX_LENGTH+" characters long")
+
 	}
 
 // Input validation for ulpoad an image
 	if(requestFile == undefined){	
 
 			} else{
+
 				if(requestFile.mimetype == "image/jpg" || requestFile.mimetype == "image/png"  || requestFile.mimetype == "image/jpeg"){
+
 					image = requestFile.buffer.toString('base64')
-					}else{
+
+				}else{
 						errorMessages.push("Image type must be .png, .jpg or .jpeg")	
-						}
-					}
+				}
+			}
 
 	return errorMessages
 
@@ -299,11 +325,12 @@ router.post("/update/:id", upload.single('image'), function(request, response){
 	if(!request.session.isLoggedIn){
 
 		errorMessages.push('You are not logged in')
-	}
 
+	}
 
 	if(errorMessages.length == 0){
 
+		//Update without a new image
 		if(request.file == undefined){
 		
 			db.updateSightByIdWithoutNewImage(newName, newCity, newCountry, newInfo, id, function(error){
@@ -333,6 +360,7 @@ router.post("/update/:id", upload.single('image'), function(request, response){
 			}			
 		})
 
+		//Update with a new image
 		}else{
 
 		newImage = request.file.buffer.toString('base64')

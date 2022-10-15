@@ -18,8 +18,9 @@
 	</div>
 {{/if}}
 
-<div class="accordion">
+
 	{{#if faqs.length}}
+		<div class="accordion">
 		<div class="grid-container-faq">		
 			{{#each faqs}}
 				<div>
@@ -31,7 +32,7 @@
 						</label>
 						<div class="accordion-body faq-answer">
 							{{answer}}
-							{{#if session.isLoggedIn}}
+							{{#if ../session.isLoggedIn}}
 								<form action="/faqs/delete/{{id}}" method="POST">	
 									<input type="submit" value="Delete">	
 								</form>
@@ -46,7 +47,7 @@
 		</div>
 	</div>
 {{else}}
-		We have no faq available at the moment. Sorry!
+		<p class="text-center">Sorry! We have no faq available at the moment. </p>
 {{/if}}
 
 <!-- andern!!! raigbaergiqebijg
