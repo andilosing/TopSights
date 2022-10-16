@@ -2,8 +2,7 @@
 
 <form method ="GET" action="/sights">
 	<div>
-		</div>
-			<input type="submit" value="Go back to sights">
+		<input type="submit" value="Go back to sights">
 	</div>
 </form>
 
@@ -18,8 +17,9 @@
 		<div>
 			Country: <input type="text" name="country" value="{{country}}">
 		</div> 
-		</div>
+		<div>
 			<input type="submit" value="Search sights">
+		</div>
 	</div>
 </form>
 
@@ -36,8 +36,7 @@
 
 
 {{#if sights.length}}
-<h1 class="text-center">Here are your search results!</h1>
-
+	<h1 class="text-center">Here are your search results!</h1>
 	<div class="grid-container"> 
 		{{#each sights}}		
 			<div>

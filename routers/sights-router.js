@@ -234,33 +234,33 @@ router.post("/delete/:id", function(request, response){
 	if(!request.session.isLoggedIn){
 
 		errorMessages.push('You are not logged in')
-	}
 
+	}
 
 	if(errorMessages.length == 0){
 	
-	db.deleteSightById(id, function(error){
+		db.deleteSightById(id, function(error){
 
-		if(error){
-				
-			errorMessages.push("Internal server error")
+			if(error){
+					
+				errorMessages.push("Internal server error")
 
-			const model = {
-				errorMessages,
-				pagePath: "/sights",
-				pageName: "sights",
-				deleteErrorFor: "sight",
-				operation: "delete"
+				const model = {
+					errorMessages,
+					pagePath: "/sights",
+					pageName: "sights",
+					deleteErrorFor: "sight",
+					operation: "delete"
+				}
+
+				response.render('delete-error.hbs', model)
+
+			}else{
+
+				response.redirect("/sights")
+
 			}
-
-			response.render('delete-error.hbs', model)
-
-		}else{
-
-			response.redirect("/sights")
-
-		}
-	})	
+		})	
 
 	}else{
 
@@ -337,61 +337,61 @@ router.post("/update/:id", upload.single('image'), function(request, response){
 				
 				if(error){
 						
-				errorMessages.push("Internal server error")
-	
-				const model = {
-					errorMessages,
-					sight: {
-						id,
-						name: newName,
-						city: newCity,
-						country: newCountry,
-						info: newInfo,
-						},
-						operation: "update"
-					}
-	
-				response.render('update-sight.hbs', model)
+					errorMessages.push("Internal server error")
+		
+					const model = {
+						errorMessages,
+						sight: {
+							id,
+							name: newName,
+							city: newCity,
+							country: newCountry,
+							info: newInfo,
+							},
+							operation: "update"
+						}
+		
+					response.render('update-sight.hbs', model)
 
-			}else{
+				}else{
 
-				response.redirect("/sights")
+					response.redirect("/sights")
 
-			}			
-		})
+				}			
+			})
 
 		//Update with a new image
 		}else{
 
-		newImage = request.file.buffer.toString('base64')
+			newImage = request.file.buffer.toString('base64')
 
-		db.updateSightByIdWithNewImage(newName, newCity, newCountry, newInfo, newImage, id, function(error){
+			db.updateSightByIdWithNewImage(newName, newCity, newCountry, newInfo, newImage, id, function(error){
 
-			if(error){
-				
-				errorMessages.push("Internal server error")
-	
-				const model = {
-					errorMessages,
-					sight: {
-						id,
-						name: newName,
-						city: newCity,
-						country: newCountry,
-						info: newInfo,
-						},
-						operation: "update"
-					}
-	
-				response.render('update-sight.hbs', model)
+				if(error){
+					
+					errorMessages.push("Internal server error")
+		
+					const model = {
+						errorMessages,
+						sight: {
+							id,
+							name: newName,
+							city: newCity,
+							country: newCountry,
+							info: newInfo,
+							},
+							operation: "update"
+						}
+		
+					response.render('update-sight.hbs', model)
 
-			}else{
+				}else{
 
-				response.redirect("/sights")
+					response.redirect("/sights")
 
-			}			
-		})
-	}
+				}			
+			})
+		}
 
 	}else{
 
@@ -419,7 +419,7 @@ router.get("/create", function(request, response){
 
 })
 
-//POST /sights/update
+//POST /sights/create
 router.post("/create", upload.single('image'), function(request, response){	
 
 	const name = request.body.name
@@ -436,6 +436,7 @@ router.post("/create", upload.single('image'), function(request, response){
 
 	}
 
+	//Validation if image is empty
 	if(request.file == undefined){
 
 		errorMessages.push("Image cant be empty")	

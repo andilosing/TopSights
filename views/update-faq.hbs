@@ -11,14 +11,18 @@
 	</div>
 {{/if}}
 
-<form method ="POST">
-	<div>
+{{#if faq}}
+	<form method ="POST">
 		<div>
-			Question: <input type="text" name="question" value="{{faq.question}}">
+			<div>
+				Question: <input type="text" name="question" value="{{faq.question}}">
+			</div>
+			<div>
+				Answer: <textarea  type="text" name="answer"  style="height:200px">{{faq.answer}}</textarea> 
+			</div>
+			<input type="submit" value="Update">
 		</div>
-		<div>
-			Answer: <textarea  type="text" name="answer"  style="height:200px">{{faq.answer}}</textarea> 
-		</div>
-		<input type="submit" value="Update">
-	</div>
-</form>
+	</form>
+{{else}}
+		<p>Please try later again!</p>
+{{/if}}

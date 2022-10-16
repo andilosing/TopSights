@@ -11,20 +11,25 @@
 	</div>
 {{/if}}
 
-<form method ="POST">
-	<div>
+
+{{#if comment}}
+	<form method ="POST">
 		<div>
-			Author: <input type="text" name="author" value="{{comment.author}}">
+			<div>
+				Author: <input type="text" name="author" value="{{comment.author}}">
+			</div>
+			<div>
+				Topic: <input type="text" name="topic" value="{{comment.topic}}">
+			</div>
+			<div>
+				Comment: <textarea  type="text" name="text"  style="height:200px">{{comment.text}}</textarea>	
+			</div>
+			<div>
+				Rating (X/10): <input type="number" name="rating" value="{{comment.rating}}">
+			</div>
+				<input type="submit"  value="Update">
 		</div>
-		<div>
-			Topic: <input type="text" name="topic" value="{{comment.topic}}">
-		</div>
-		<div>
-			Comment: <textarea  type="text" name="text"  style="height:200px">{{comment.text}}</textarea>	
-		</div>
-		<div>
-			Rating: <input type="number" name="rating" value="{{comment.rating}}">
-		</div>
-			<input type="submit"  value="Update">
-	</div>
-</form>
+	</form>
+{{else}}
+	<p>Please try later again!</p>
+{{/if}}

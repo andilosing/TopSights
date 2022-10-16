@@ -11,24 +11,28 @@
 	</div>
 {{/if}}
 
-<form method ="POST" enctype="multipart/form-data">
-	<div>
+{{#if sight}}
+	<form method ="POST" enctype="multipart/form-data">
 		<div>
-			Name: <input type="text" name="name" value="{{sight.name}}">
+			<div>
+				Name: <input type="text" name="name" value="{{sight.name}}">
+			</div>
+			<div>
+				City: <input type="text" name="city" value="{{sight.city}}">
+			</div>
+			<div>
+				Country: <input type="text" name="country" value="{{sight.country}}">
+			</div>
+			<div>
+				Info: <textarea  type="text" name="info"  style="height:200px">{{sight.info}}</textarea>
+			</div>
+			<div>
+				Current image: <img alt="{{sight.name}},{{sight.name}}" src="data:image/png;base64, {{sight.image}}"  height="24%" name = "currentImage" width="60%" class="img-responsive p-centered">
+				Upload new image <b>(optional)</b>: <Input  type ="file" name="image" > 
+			</div>
+			<input type="submit" value="Update">
 		</div>
-		<div>
-			City: <input type="text" name="city" value="{{sight.city}}">
-		</div>
-		<div>
-			Country: <input type="text" name="country" value="{{sight.country}}">
-		</div>
-		<div>
-			Info: <textarea  type="text" name="info"  style="height:200px">{{sight.info}}</textarea>
-		</div>
-		<div>
-			Current image: <img alt="{{sight.name}},{{sight.name}}" src="data:image/png;base64, {{sight.image}}"  height="24%" name = "currentImage" width="60%" class="img-responsive p-centered">
-			Upload new image <b>(optional)</b>: <Input  type ="file" name="image" > 
-		</div>
-		<input type="submit" value="Update">
-	</div>
-</form>
+	</form>
+{{else}}
+	<p>Please try later again!</p>
+{{/if}}
