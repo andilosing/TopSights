@@ -104,16 +104,18 @@ function getValidationErrorsForSight(name, city, country, info, requestFile){
 // Input validation for ulpoad an image
 	if(requestFile == undefined){	
 
-			} else{
+	}else{
 
-				if(requestFile.mimetype == "image/jpg" || requestFile.mimetype == "image/png"  || requestFile.mimetype == "image/jpeg"){
+		if(requestFile.mimetype == "image/jpg" || requestFile.mimetype == "image/png"  || requestFile.mimetype == "image/jpeg"){
 
-					image = requestFile.buffer.toString('base64')
+			image = requestFile.buffer.toString('base64')
 
-				}else{
-						errorMessages.push("Image type must be .png, .jpg or .jpeg")	
-				}
-			}
+		}else{
+
+			errorMessages.push("Image type must be .png, .jpg or .jpeg")	
+			
+		}
+	}
 
 	return errorMessages
 

@@ -280,28 +280,28 @@ router.post("/delete/:id", function(request, response){
 
 	if(errorMessages.length == 0){
 	
-	db.deleteCommentById(id, function(error){
+		db.deleteCommentById(id, function(error){
 
-		if(error){
-				
-			errorMessages.push("Internal server error")
+			if(error){
+					
+				errorMessages.push("Internal server error")
 
-			const model = {
-				errorMessages,
-				pagePath: "/comments",
-				pageName: "comments",
-				deleteErrorFor: "comment",
-				operation: "delete"
+				const model = {
+					errorMessages,
+					pagePath: "/comments",
+					pageName: "comments",
+					deleteErrorFor: "comment",
+					operation: "delete"
+				}
+
+				response.render('delete-error.hbs', model)
+
+			}else{
+
+				response.redirect("/comments")
+
 			}
-
-			response.render('delete-error.hbs', model)
-
-		}else{
-
-			response.redirect("/comments")
-
-		}
-	})	
+		})	
 
 	}else{
 
